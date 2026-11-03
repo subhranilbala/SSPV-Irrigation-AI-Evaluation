@@ -1,0 +1,30 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+
+# macOS files
+.DS_Store
+._*
+.AppleDouble
+
+# Output checkpoints and generated cache (keep models git-lfs or export directory)
+outputs_test/
+outputs_field/
+.pytest_cache/
+.coverage
+
+# IDE & Editor files
+.vscode/
+.idea/
+.claude/
+.agents/
+
+# Matplotlib cache
+.matplotlib/
