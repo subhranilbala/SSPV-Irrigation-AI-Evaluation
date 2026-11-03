@@ -1,0 +1,83 @@
+# Module Documentation: `preprocessing.py`
+
+**File Path:** [`sspv_pipeline/preprocessing.py`](file:///Users/subhranilbala/Downloads/SSPV-Irrigation-AI-Evaluation/sspv_pipeline/preprocessing.py)  
+**Component:** Photogrammetric & Atmospheric UAV Preprocessing Pipeline  
+**Presentation Mapping:** Slide 10 (Tech Stack) & Slide 11 (Preprocessing Steps 1 to 4)  
+
+---
+
+## 1. Module Overview & Purpose
+
+`preprocessing.py` implements the 4-step drone imagery calibration pipeline required to convert raw Digital Numbers (DN) captured by UAV cameras (e.g., DJI Zenmuse P1 at 8192×5460 resolution) into physically meaningful, multi-date aligned, noise-filtered surface reflectance maps.
+
+---
+
+## 2. Theoretical Background & Mathematical Formulations
+
+### Step 1: DN → Reflectance Conversion (`dn_to_reflectance`)
+Consumer and industrial UAV RGB cameras save imagery in sRGB color space governed by a non-linear gamma transfer function ($\gamma \approx 2.4$). Calculating vegetation indices directly on non-linear sRGB values leads to severe distortions in greenness estimation.
+
+The function linearizes the input normalized DN:
+$$
+\rho_{\text{linear}} = 
+\begin{cases} 
+\frac{\rho}{12.92}, & \rho \le 0.04045 \\
+\left(\frac{\rho + 0.055}{1.055}\right)^{2.4}, & \rho > 0.04045 
+\end{cases}
+$$
+where $\rho = \frac{\text{DN}}{255.0}$ (for 8-bit) or $\frac{\text{DN}}{65535.0}$ (for 16-bit GeoTIFFs). If calibration panel measurements are supplied, empirical radiometric gains are multiplied per band.
+
+### Step 2: Dark Object Subtraction (`dark_object_subtraction`)
+Low-altitude UAV flights (50–120 m AGL) suffer from Rayleigh and aerosol atmospheric path radiance ($L_p$), causing deep shadows and dark surfaces to appear artificially bright:
+$$
+\rho_{\text{corrected}}(\lambda) = \frac{\max\left(0, \rho_{\text{linear}}(\lambda) - \text{Percentile}_{1.0}(\rho_{\text{linear}}(\lambda))\right)}{\text{Percentile}_{99.9}(\rho_{\text{linear}}(\lambda)) + \epsilon}
+$$
+By subtracting the 1st percentile non-zero pixel value per channel and normalizing by the 99.9th percentile, additive atmospheric haze is removed.
+
+### Step 3: Multi-Date SIFT Affine Co-Registration (`geometric_alignment`)
+Due to slight GPS drift between drone survey flights across different dates, image boundaries must be co-registered:
+1. Grayscale conversion of target and reference orthomosaic patches.
+2. SIFT feature detection (`nfeatures=2500`) and descriptor extraction.
+3. Brute-Force $L_2$ k-nearest neighbors matching with Lowe's ratio test:
+   $$\|d_{\text{best}}\| < 0.75 \|d_{\text{second\_best}}\|$$
+4. RANSAC robust partial affine estimation (`cv2.estimateAffinePartial2D`) to filter outliers and compute translation, rotation, and uniform scale.
+5. Bilinear warp affine resampling with reflection padding.
+
+### Step 4: ROI Boundary Isolation & Median Filtering (`clip_and_filter`)
+Isolates plot boundary bounding boxes $(y_1, y_2, x_1, x_2)$ and applies a $3\times3$ spatial median filter:
+$$
+I_{\text{clean}}(x, y) = \text{median}\left\{ I(x+i, y+j) \mid -1 \le i, j \le 1 \right\}
+$$
+This suppresses salt-and-pepper high-frequency sensor noise while preserving sharp boundaries between crop leaves and sandy soil.
+
+---
+
+## 3. Class Structure: `UAVPreprocessor`
+
+### Constructor
+```python
+UAVPreprocessor(dos_percentile: float = 1.0, median_kernel: int = 3)
+```
+
+### Core Methods
+- `load_image(image_path: str) -> Tuple[np.ndarray, Dict[str, Any]]`: Handles GeoTIFFs (via `rasterio`) and `.JPG` / `.png` (via `cv2` or `PIL`).
+- `dn_to_reflectance(img_dn, panel_factor=None) -> np.ndarray`: Implements sRGB inverse gamma linearization.
+- `dark_object_subtraction(reflectance) -> np.ndarray`: Implements percentile-based DOS.
+- `geometric_alignment(target_img, reference_img) -> np.ndarray`: Implements SIFT + RANSAC affine warping.
+- `clip_and_filter(img, roi_bbox=None) -> np.ndarray`: Implements bounding box clipping and median filtering.
+- `process(img_dn, reference_img=None, roi_bbox=None) -> np.ndarray`: Executes the full 4-step pipeline end-to-end.
+
+---
+
+## 4. Example Usage
+
+```python
+from sspv_pipeline.preprocessing import UAVPreprocessor
+
+preprocessor = UAVPreprocessor(dos_percentile=1.0, median_kernel=3)
+raw_img, meta = preprocessor.load_image("DJI_0042.JPG")
+clean_reflectance = preprocessor.process(raw_img)
+
+print("Preprocessed reflectance shape:", clean_reflectance.shape)
+print("Value range:", clean_reflectance.min(), clean_reflectance.max())
+```
