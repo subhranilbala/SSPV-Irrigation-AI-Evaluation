@@ -1,0 +1,12 @@
+[run]
+source = sspv_pipeline
+omit =
+    */tests/*
+    */venv/*
+
+[report]
+exclude_lines =
+    pragma: no cover
+    except ImportError:
+    if __name__ == .__main__.:
+    raise NotImplementedError

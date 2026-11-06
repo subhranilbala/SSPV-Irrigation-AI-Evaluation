@@ -15,6 +15,7 @@ ENV/
 .AppleDouble
 
 # Output checkpoints and generated cache (keep models git-lfs or export directory)
+outputs/
 outputs_test/
 outputs_field/
 .pytest_cache/
