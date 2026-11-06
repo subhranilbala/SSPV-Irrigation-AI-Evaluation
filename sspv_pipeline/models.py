@@ -39,7 +39,7 @@ def adapt_resnet_first_conv_to_11ch(resnet_model: nn.Module, in_channels: int = 
         rgb_mean_weight = old_conv.weight.mean(dim=1, keepdim=True)
         new_conv.weight[:, 3:, :, :] = rgb_mean_weight.repeat(1, in_channels - 3, 1, 1) * 0.5
         if old_conv.bias is not None:
-            new_conv.bias = old_conv.bias.clone()
+            new_conv.bias = nn.Parameter(old_conv.bias.clone())
 
     resnet_model.conv1 = new_conv
     return resnet_model
@@ -64,7 +64,7 @@ def adapt_efficientnet_first_conv_to_11ch(effnet_model: nn.Module, in_channels: 
         rgb_mean_weight = old_conv.weight.mean(dim=1, keepdim=True)
         new_conv.weight[:, 3:, :, :] = rgb_mean_weight.repeat(1, in_channels - 3, 1, 1) * 0.5
         if old_conv.bias is not None:
-            new_conv.bias = old_conv.bias.clone()
+            new_conv.bias = nn.Parameter(old_conv.bias.clone())
 
     effnet_model.features[0][0] = new_conv
     return effnet_model

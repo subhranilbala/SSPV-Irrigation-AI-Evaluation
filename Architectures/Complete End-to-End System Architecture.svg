@@ -1,0 +1,208 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1543.770183333333 2257.2000000000003" width="1543.770183333333" height="2257.2000000000003" style="--bg:#FFFFFF;--fg:#1E293B;--line:#64748B;--muted:#475569;--surface:#F8FAFC;--border:#CBD5E1;background:var(--bg)">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap');
+  text { font-family: 'Inter', system-ui, sans-serif; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+  <marker id="arrowhead" markerWidth="8" markerHeight="5" refX="7" refY="2.5" orient="auto">
+    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+  <marker id="arrowhead-start" markerWidth="8" markerHeight="5" refX="1" refY="2.5" orient="auto-start-reverse">
+    <polygon points="8 0, 0 2.5, 8 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+</defs>
+<g class="subgraph" data-id="Data_Acquisition" data-label="1. Data Ingestion &amp; Synthesis">
+  <rect x="350.18893333333335" y="40" width="561.8239999999998" height="215.60000000000002" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="350.18893333333335" y="40" width="561.8239999999998" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="362.18893333333335" y="54" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">1. Data Ingestion &amp; Synthesis</text>
+</g>
+<g class="subgraph" data-id="Preprocessing_Module" data-label="2. UAV Preprocessing Pipeline">
+  <rect x="573.8964333333332" y="315.6" width="386.652" height="419.20000000000005" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="573.8964333333332" y="315.6" width="386.652" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="585.8964333333332" y="329.6" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">2. UAV Preprocessing Pipeline</text>
+</g>
+<g class="subgraph" data-id="Feature_Engineering" data-label="3. Feature Engineering">
+  <rect x="455.18843333333336" y="794.8000000000001" width="345.1559999999999" height="232.5" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="455.18843333333336" y="794.8000000000001" width="345.1559999999999" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="467.18843333333336" y="808.8000000000001" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">3. Feature Engineering</text>
+</g>
+<g class="subgraph" data-id="Pseudo_Labeling" data-label="4. Biophysical Pseudo-Labeling">
+  <rect x="40" y="1610.8000000000002" width="581.8309999999999" height="113.80000000000001" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="40" y="1610.8000000000002" width="581.8309999999999" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="52" y="1624.8000000000002" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">4. Biophysical Pseudo-Labeling</text>
+</g>
+<g class="subgraph" data-id="Deep_Learning" data-label="5. Deep Learning Framework">
+  <rect x="641.8309999999999" y="1087.3000000000002" width="636.3897499999999" height="487.50000000000006" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="641.8309999999999" y="1087.3000000000002" width="636.3897499999999" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="653.8309999999999" y="1101.3000000000002" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">5. Deep Learning Framework</text>
+</g>
+<g class="subgraph" data-id="Explainability_Stats" data-label="6. Explainability &amp; Statistical Engines">
+  <rect x="976.7731833333332" y="1634.8000000000002" width="526.9969999999998" height="181.4" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="976.7731833333332" y="1634.8000000000002" width="526.9969999999998" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="988.7731833333332" y="1648.8000000000002" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">6. Explainability &amp; Statistical Engines</text>
+</g>
+<g class="subgraph" data-id="Decision_Support" data-label="7. Decision Support &amp; Outputs">
+  <rect x="645.7649333333334" y="1876.2000000000003" width="825.1381666666665" height="341" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="645.7649333333334" y="1876.2000000000003" width="825.1381666666665" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="657.7649333333334" y="1890.2000000000003" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">7. Decision Support &amp; Outputs</text>
+</g>
+<polyline class="edge" data-from="STRIDE" data-to="S1" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="767.2224333333332,239.60000000000002 767.2224333333332,359.6" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="S4" data-to="VIs" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="767.2224333333332,718.8 767.2224333333332,778.8 627.7664333333333,778.8 627.7664333333333,838.8000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="SIM" data-to="VIs" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="488.3104333333333,239.60000000000002 488.3104333333333,778.8 627.7664333333333,778.8 627.7664333333333,838.8000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="TENSOR" data-to="PSEUDO_SEG" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="627.7664333333333,1011.3000000000002 627.7664333333333,1071.3000000000002 460.73849999999993,1071.3000000000002 460.73849999999993,1679.4750000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="TENSOR" data-to="PSEUDO_CLS" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="627.7664333333333,1011.3000000000002 627.7664333333333,1071.3000000000002 171.82299999999998,1071.3000000000002 171.82299999999998,1679.4750000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="TENSOR" data-to="UNET" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="627.7664333333333,1011.3000000000002 627.7664333333333,1071.3000000000002 1025.6461666666667,1071.3000000000002 1025.6461666666667,1131.3000000000002" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="UNET" data-to="PSEUDO_SEG" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="978.7639999999999,1185.1000000000001 978.7639999999999,1592.8000000000002 509.10266666666655,1592.8000000000002 509.10266666666655,1679.4750000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="TENSOR" data-to="GATE" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="627.7664333333333,1011.3000000000002 627.7664333333333,1071.3000000000002 1127.8727499999998,1071.3000000000002 1127.8727499999998,1301.4" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="PSEUDO_CLS" data-to="LOSS" data-style="dotted" data-arrow-start="false" data-arrow-end="true" points="171.82299999999998,1733.275 171.82299999999998,1742.6000000000001 631.8309999999999,1742.6000000000001 631.8309999999999,1069.3000000000002 761.4753333333332,1069.3000000000002 761.4753333333333,1505.0000000000005" fill="none" stroke="var(--_line)" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="CNN" data-to="GCAM" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1127.8727499999998,1457.0000000000002 1127.8727499999998,1481.0000000000002 1368.983183333333,1481.0000000000002 1368.983183333333,1679.4750000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="CNN" data-to="STATS" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1127.8727499999998,1457.0000000000002 1127.8727499999998,1481.0000000000002 1107.4846833333331,1481.0000000000002 1107.4846833333331,1679.4750000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="STATS" data-to="REC" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1107.4846833333331,1800.8750000000002 1107.4846833333331,1872.5375000000004 850.9469333333334,1872.5375000000004 850.9469333333334,1944.2000000000003" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="CNN" data-to="REC" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1127.8727499999998,1457.0000000000002 1127.8727499999998,1481.0000000000002 850.9469333333334,1481.0000000000002 850.9469333333334,1944.2000000000003" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="STATS" data-to="UI" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1107.4846833333331,1800.8750000000002 1107.4846833333331,1872.5375000000004 1267.9441,1872.5375000000004 1267.9441,2079.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="GCAM" data-to="UI" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1368.983183333333,1750.1750000000002 1368.983183333333,1858.2000000000003 1361.4235999999999,1858.2000000000003 1361.4235999999996,2079.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="STATS" data-to="ARTIFACTS" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1107.4846833333331,1800.8750000000002 1107.4846833333331,1872.5375000000004 919.0075999999999,1872.5375000000004 919.0075999999999,2079.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="RAW" data-to="STRIDE" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="767.2224333333332,137.8 767.2224333333332,185.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="S1" data-to="S2" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="767.2224333333332,413.40000000000003 767.2224333333332,461.40000000000003" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="S2" data-to="S3" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="767.2224333333332,515.2 767.2224333333332,563.2" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="S3" data-to="S4" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="767.2224333333332,617 767.2224333333332,665" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="VIs" data-to="TENSOR" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="627.7664333333333,892.6000000000001 627.7664333333333,940.6000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="UNET" data-to="GATE" data-style="dotted" data-arrow-start="false" data-arrow-end="true" data-label="Canopy Prediction" points="1072.5283333333332,1185.1000000000001 1072.5283333333332,1197.1000000000001 1075.9905833333332,1197.1000000000001 1075.9905833333332,1265.4 1083.2135833333332,1265.4 1083.2135833333332,1301.4" fill="none" stroke="var(--_line)" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="GATE" data-to="CNN" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1127.8727499999998,1355.2000000000003 1127.87275,1403.2000000000003" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="CNN" data-to="LOSS" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1127.8727499999998,1457.0000000000002 1127.8727499999998,1481.0000000000002 813.2974999999999,1481.0000000000002 813.2974999999999,1505.0000000000002" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="REC" data-to="UI" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="850.9469333333334,2031.8000000000002 850.9469333333334,2055.8 1267.9441,2055.8 1267.9441,2079.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="REC" data-to="ARTIFACTS" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="850.9469333333334,2031.8000000000002 850.9469333333334,2055.8 919.0075999999999,2055.8 919.0075999999999,2079.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<g class="edge-label" data-from="UNET" data-to="GATE" data-label="Canopy Prediction">
+  <rect x="1023.4905833333331" y="1228.1000000000001" width="104.96800000000002" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="1075.9745833333332" y="1243.2500000000002" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Canopy Prediction</text>
+</g>
+<g class="node" data-id="RAW" data-label="DJI Zenmuse P1 Imagery
+(8192×5460 GeoTIFF / JPG)" data-shape="rectangle">
+  <rect x="666.2194333333332" y="84" width="202.00599999999994" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="767.2224333333331" y="110.9" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="767.2224333333331" dy="-3.9000000000000012">DJI Zenmuse P1 Imagery</tspan><tspan x="767.2224333333331" dy="16.900000000000002">(8192×5460 GeoTIFF / JPG)</tspan></text>
+</g>
+<g class="node" data-id="SIM" data-label="7-Date Arid Soil Field Simulator
+(Rajasthan Soil Profile + Salt Halos)" data-shape="rectangle">
+  <rect x="366.18893333333335" y="185.8" width="244.24299999999997" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="488.3104333333333" y="212.70000000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="488.3104333333333" dy="-3.9000000000000012">7-Date Arid Soil Field Simulator</tspan><tspan x="488.3104333333333" dy="16.900000000000002">(Rajasthan Soil Profile + Salt Halos)</tspan></text>
+</g>
+<g class="node" data-id="STRIDE" data-label="Uniform Flight Striding (np.linspace)
+Selects N evenly spaced flight frames" data-shape="rectangle">
+  <rect x="638.4319333333333" y="185.8" width="257.5809999999999" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="767.2224333333332" y="212.70000000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="767.2224333333332" dy="-3.9000000000000012">Uniform Flight Striding (np.linspace)</tspan><tspan x="767.2224333333332" dy="16.900000000000002">Selects N evenly spaced flight frames</tspan></text>
+</g>
+<g class="node" data-id="S1" data-label="Step 1: Inverse sRGB Gamma
+(Piecewise Linear / Power 2.4)" data-shape="rectangle">
+  <rect x="657.6979333333333" y="359.6" width="219.049" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="767.2224333333332" y="386.5" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="767.2224333333332" dy="-3.9000000000000012">Step 1: Inverse sRGB Gamma</tspan><tspan x="767.2224333333332" dy="16.900000000000002">(Piecewise Linear / Power 2.4)</tspan></text>
+</g>
+<g class="node" data-id="S2" data-label="Step 2: Dark Object Subtraction (DOS)
+(Atmospheric Correction)" data-shape="rectangle">
+  <rect x="637.6909333333332" y="461.40000000000003" width="259.063" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="767.2224333333331" y="488.3" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="767.2224333333331" dy="-3.9000000000000012">Step 2: Dark Object Subtraction (DOS)</tspan><tspan x="767.2224333333331" dy="16.900000000000002">(Atmospheric Correction)</tspan></text>
+</g>
+<g class="node" data-id="S3" data-label="Step 3: SIFT Co-Registration
+(2500 Keypoints + Lowe's Ratio 0.75 + RANSAC Affine)" data-shape="rectangle">
+  <rect x="589.8964333333332" y="563.2" width="354.652" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="767.2224333333332" y="590.1" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="767.2224333333332" dy="-3.9000000000000012">Step 3: SIFT Co-Registration</tspan><tspan x="767.2224333333332" dy="16.900000000000002">(2500 Keypoints + Lowe&#39;s Ratio 0.75 + RANSAC Affine)</tspan></text>
+</g>
+<g class="node" data-id="S4" data-label="Step 4: ROI Cropping &amp; Median Filtering
+(Per-channel cv2/scipy median blur)" data-shape="rectangle">
+  <rect x="633.2449333333333" y="665" width="267.9549999999999" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="767.2224333333332" y="691.9" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="767.2224333333332" dy="-3.9000000000000012">Step 4: ROI Cropping &amp; Median Filtering</tspan><tspan x="767.2224333333332" dy="16.900000000000002">(Per-channel cv2/scipy median blur)</tspan></text>
+</g>
+<g class="node" data-id="VIs" data-label="Compute 8 Normalized Indices:
+NGRDI, ExG, ExR, VARI, MGRVI, NPCI, TGI, ExB" data-shape="rectangle">
+  <rect x="471.18843333333336" y="838.8000000000001" width="313.1559999999999" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="627.7664333333333" y="865.7" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="627.7664333333333" dy="-3.9000000000000012">Compute 8 Normalized Indices:</tspan><tspan x="627.7664333333333" dy="16.900000000000002">NGRDI, ExG, ExR, VARI, MGRVI, NPCI, TGI, ExB</tspan></text>
+</g>
+<g class="node" data-id="TENSOR" data-label="Assemble 11-Channel Tensor
+Shape: (B, 11, H, W) float32
+[R, G, B, 8 Spectral Indices]" data-shape="rectangle">
+  <rect x="524.1699333333333" y="940.6000000000001" width="207.19299999999998" height="70.7" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="627.7664333333333" y="975.9500000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="627.7664333333333" dy="-12.350000000000001">Assemble 11-Channel Tensor</tspan><tspan x="627.7664333333333" dy="16.900000000000002">Shape: (B, 11, H, W) float32</tspan><tspan x="627.7664333333333" dy="16.900000000000002">[R, G, B, 8 Spectral Indices]</tspan></text>
+</g>
+<g class="node" data-id="PSEUDO_SEG" data-label="4-Class Semantic Segmentation Mask
+0: Soil | 1: Healthy | 2: Stressed | 3: Salt Patch" data-shape="rectangle">
+  <rect x="315.64599999999996" y="1679.4750000000001" width="290.18499999999995" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="460.73849999999993" y="1706.3750000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="460.73849999999993" dy="-3.9000000000000012">4-Class Semantic Segmentation Mask</tspan><tspan x="460.73849999999993" dy="16.900000000000002">0: Soil | 1: Healthy | 2: Stressed | 3: Salt Patch</tspan></text>
+</g>
+<g class="node" data-id="PSEUDO_CLS" data-label="3 Patch-Level Multi-Task Labels
+Stress (3) | Moisture (3) | Yield (3)" data-shape="rectangle">
+  <rect x="56" y="1679.4750000000001" width="231.646" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="171.82299999999998" y="1706.3750000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="171.82299999999998" dy="-3.9000000000000012">3 Patch-Level Multi-Task Labels</tspan><tspan x="171.82299999999998" dy="16.900000000000002">Stress (3) | Moisture (3) | Yield (3)</tspan></text>
+</g>
+<g class="node" data-id="UNET" data-label="11-Channel U-Net
+(ResNet18 Encoder + 4 Skip Connections)" data-shape="rectangle">
+  <rect x="884.9996666666666" y="1131.3000000000002" width="281.29299999999995" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1025.6461666666667" y="1158.2000000000003" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="1025.6461666666667" dy="-3.9000000000000012">11-Channel U-Net</tspan><tspan x="1025.6461666666667" dy="16.900000000000002">(ResNet18 Encoder + 4 Skip Connections)</tspan></text>
+</g>
+<g class="node" data-id="GATE" data-label="Crop Canopy Soft Feature Gate
+X_gated = X ⊙ (0.25 + 0.75 · CropMask)" data-shape="rectangle">
+  <rect x="993.8952499999998" y="1301.4" width="267.95500000000004" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1127.8727499999998" y="1328.3000000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="1127.8727499999998" dy="-3.9000000000000012">Crop Canopy Soft Feature Gate</tspan><tspan x="1127.8727499999998" dy="16.900000000000002">X_gated = X ⊙ (0.25 + 0.75 · CropMask)</tspan></text>
+</g>
+<g class="node" data-id="CNN" data-label="11-Channel Multi-Task CNN
+(ResNet18 or EfficientNet-B0 Backbone)" data-shape="rectangle">
+  <rect x="993.5247499999998" y="1403.2000000000003" width="268.69599999999997" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1127.8727499999998" y="1430.1000000000004" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="1127.8727499999998" dy="-3.9000000000000012">11-Channel Multi-Task CNN</tspan><tspan x="1127.8727499999998" dy="16.900000000000002">(ResNet18 or EfficientNet-B0 Backbone)</tspan></text>
+</g>
+<g class="node" data-id="LOSS" data-label="MultiTaskLoss
+(Inverse-Frequency Weighted Cross Entropy)" data-shape="rectangle">
+  <rect x="657.8309999999999" y="1505.0000000000002" width="310.93299999999994" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="813.2974999999999" y="1531.9000000000003" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="813.2974999999999" dy="-3.9000000000000012">MultiTaskLoss</tspan><tspan x="813.2974999999999" dy="16.900000000000002">(Inverse-Frequency Weighted Cross Entropy)</tspan></text>
+</g>
+<g class="node" data-id="GCAM" data-label="Multi-Task Grad-CAM
+Per-Head Attention Heatmaps
+(Target Conv: layer4 / features[-1])" data-shape="rectangle">
+  <rect x="1250.196183333333" y="1679.4750000000001" width="237.57399999999998" height="70.7" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1368.983183333333" y="1714.825" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="1368.983183333333" dy="-12.350000000000001">Multi-Task Grad-CAM</tspan><tspan x="1368.983183333333" dy="16.900000000000002">Per-Head Attention Heatmaps</tspan><tspan x="1368.983183333333" dy="16.900000000000002">(Target Conv: layer4 / features[-1])</tspan></text>
+</g>
+<g class="node" data-id="STATS" data-label="Statistical Comparison Engine
+• Welch's Two-Sample t-test
+• One-Way ANOVAs (Plot &amp; Date)
+• Cohen's d Effect Sizes
+• Temporal Linear Regression
+• Slope Comparison Z-test" data-shape="rectangle">
+  <rect x="992.7731833333332" y="1679.4750000000001" width="229.42299999999992" height="121.4" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1107.4846833333331" y="1740.1750000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="1107.4846833333331" dy="-37.70000000000001">Statistical Comparison Engine</tspan><tspan x="1107.4846833333331" dy="16.900000000000002">• Welch&#39;s Two-Sample t-test</tspan><tspan x="1107.4846833333331" dy="16.900000000000002">• One-Way ANOVAs (Plot &amp; Date)</tspan><tspan x="1107.4846833333331" dy="16.900000000000002">• Cohen&#39;s d Effect Sizes</tspan><tspan x="1107.4846833333331" dy="16.900000000000002">• Temporal Linear Regression</tspan><tspan x="1107.4846833333331" dy="16.900000000000002">• Slope Comparison Z-test</tspan></text>
+</g>
+<g class="node" data-id="REC" data-label="Hybrid Recommendation Engine
+Tier 1: Deterministic Agronomic Rules
+Tier 2: 13-Dim Decision Tree (Trained on 600 domain rules)
+Secondary: Salinity Advisory (salt_ratio &gt; 0.05)" data-shape="rectangle">
+  <rect x="661.7649333333334" y="1944.2000000000003" width="378.3639999999999" height="87.60000000000001" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="850.9469333333334" y="1988.0000000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="850.9469333333334" dy="-20.8">Hybrid Recommendation Engine</tspan><tspan x="850.9469333333334" dy="16.900000000000002">Tier 1: Deterministic Agronomic Rules</tspan><tspan x="850.9469333333334" dy="16.900000000000002">Tier 2: 13-Dim Decision Tree (Trained on 600 domain rules)</tspan><tspan x="850.9469333333334" dy="16.900000000000002">Secondary: Salinity Advisory (salt_ratio &gt; 0.05)</tspan></text>
+</g>
+<g class="node" data-id="UI" data-label="Interactive Streamlit Dashboard
+• 4 KPI Cards (NGRDI, p-value, Cohen's d, ExG variance)
+• 4-Panel Spatial Inspector (RGB, NGRDI, Seg, Grad-CAM)
+• Multi-Date Temporal Growth Curves" data-shape="rectangle">
+  <rect x="1080.9850999999999" y="2079.8" width="373.91799999999995" height="87.60000000000001" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1267.9441" y="2123.6000000000004" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="1267.9441" dy="-20.8">Interactive Streamlit Dashboard</tspan><tspan x="1267.9441" dy="16.900000000000002">• 4 KPI Cards (NGRDI, p-value, Cohen&#39;s d, ExG variance)</tspan><tspan x="1267.9441" dy="16.900000000000002">• 4-Panel Spatial Inspector (RGB, NGRDI, Seg, Grad-CAM)</tspan><tspan x="1267.9441" dy="16.900000000000002">• Multi-Date Temporal Growth Curves</tspan></text>
+</g>
+<g class="node" data-id="ARTIFACTS" data-label="Exported Thesis Deliverables
+• sspv_7date_metrics.csv (18 columns)
+• statistical_report.json
+• PyTorch Weights (.pth)
+• 4-Panel PNG Figures
+• Thesis Chapter Report (.txt)" data-shape="rectangle">
+  <rect x="785.0301" y="2079.8" width="267.9549999999999" height="121.4" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="919.0075999999999" y="2140.5" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="919.0075999999999" dy="-37.70000000000001">Exported Thesis Deliverables</tspan><tspan x="919.0075999999999" dy="16.900000000000002">• sspv_7date_metrics.csv (18 columns)</tspan><tspan x="919.0075999999999" dy="16.900000000000002">• statistical_report.json</tspan><tspan x="919.0075999999999" dy="16.900000000000002">• PyTorch Weights (.pth)</tspan><tspan x="919.0075999999999" dy="16.900000000000002">• 4-Panel PNG Figures</tspan><tspan x="919.0075999999999" dy="16.900000000000002">• Thesis Chapter Report (.txt)</tspan></text>
+</g>
+</svg>

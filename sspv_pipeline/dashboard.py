@@ -23,6 +23,18 @@ if HAS_CV2:
     import cv2
 
 
+def init_and_train_pipeline(folder: str, ep: int, pre: bool, bbone: str, max_im: int):
+    orch = SSPVPipelineOrchestrator(
+        data_dir=folder.strip() if folder.strip() else None,
+        pretrained=pre,
+        backbone_name=bbone,
+        max_images_per_date=max_im
+    )
+    hist = orch.train_models(epochs=ep)
+    df_res, stat_res = orch.evaluate_all_dates()
+    return orch, hist, df_res, stat_res
+
+
 def run_streamlit_dashboard():
     import streamlit as st
 
@@ -70,19 +82,8 @@ def run_streamlit_dashboard():
             ["stress_logits", "moisture_logits", "yield_logits"]
         )
 
-    @st.cache_resource
-    def init_and_train(folder: str, ep: int, pre: bool, bbone: str, max_im: int):
-        orch = SSPVPipelineOrchestrator(
-            data_dir=folder.strip() if folder.strip() else None,
-            pretrained=pre,
-            backbone_name=bbone,
-            max_images_per_date=max_im
-        )
-        hist = orch.train_models(epochs=ep)
-        df_res, stat_res = orch.evaluate_all_dates()
-        return orch, hist, df_res, stat_res
-
-    orch, history, df_metrics, stats_summary = init_and_train(
+    cached_init = st.cache_resource(init_and_train_pipeline)
+    orch, history, df_metrics, stats_summary = cached_init(
         data_dir, epochs, use_pretrained, backbone_choice, max_imgs_ui
     )
 
@@ -192,7 +193,7 @@ def run_streamlit_dashboard():
     ax_left.grid(True, alpha=0.3)
 
     sns.boxplot(
-        data=df_metrics, x="plot_type", y="stress_pixel_ratio", palette="Set2", ax=ax_right
+        data=df_metrics, x="plot_type", y="stress_pixel_ratio", hue="plot_type", palette="Set2", legend=False, ax=ax_right
     )
     ax_right.set_title("Crop Stress Pixel Proportion (One-Way ANOVA Comparison)")
     ax_right.set_xlabel("Irrigation System")

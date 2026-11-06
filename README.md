@@ -95,7 +95,14 @@ This repository provides an **end-to-end AI-driven evaluation and decision-suppo
 ```
 SSPV-Irrigation-AI-Evaluation/
 ├── main.py                             # Unified CLI & Streamlit runner
-├── sspv_mtp_pipeline.py                # Monolithic reference implementation
+├── requirements.txt                    # Project dependencies
+├── ARCHITECTURE_DIAGRAMS.md             # Complete architecture diagrams (Mermaid & SVG references)
+├── Architectures/                      # Rendered high-resolution vector architecture SVGs
+│   ├── Complete End-to-End System Architecture.svg
+│   ├── 11-Channel U-Net Field Segmentation.svg
+│   ├── 11-Channel Multi-Task CNN with Crop Gating.svg
+│   └── Hybrid Recommendation Engine Architecture.svg
+├── MTP_PROJECT_DETAILED_ANALYSIS.md    # Comprehensive MTP evaluation vs. PPT presentation
 ├── USER_EXECUTION_GUIDE.md             # Detailed Execution, Inputs & Outputs Guide
 ├── SYSTEM_ARCHITECTURE_GUIDE.md        # Comprehensive technical & scientific guide
 │
@@ -116,6 +123,13 @@ SSPV-Irrigation-AI-Evaluation/
 │   ├── dataset.py                      # Multi-date DJI folder loader & 7-date benchmark
 │   ├── orchestrator.py                 # Pipeline training, evaluation & artifact exporter
 │   └── dashboard.py                    # Interactive Streamlit UI
+│
+├── tests/                              # Comprehensive Unit & Regression Tests
+│   └── test_pipeline.py                # 12 test suites covering all 11 modules
+│
+├── archive/                            # Legacy & Archived Code
+│   ├── README.md
+│   └── sspv_mtp_pipeline.py            # Legacy monolithic single-file version
 │
 ├── outputs/                            # Exported weights & thesis artifacts (generated)
 │   ├── unet_11ch_weights.pth

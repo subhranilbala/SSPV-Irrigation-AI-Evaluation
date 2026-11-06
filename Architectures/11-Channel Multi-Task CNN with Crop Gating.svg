@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1125.252 749" width="1125.252" height="749" style="--bg:#FFFFFF;--fg:#1E293B;--line:#64748B;--muted:#475569;--surface:#F8FAFC;--border:#CBD5E1;background:var(--bg)">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap');
+  text { font-family: 'Inter', system-ui, sans-serif; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+  <marker id="arrowhead" markerWidth="8" markerHeight="5" refX="7" refY="2.5" orient="auto">
+    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+  <marker id="arrowhead-start" markerWidth="8" markerHeight="5" refX="1" refY="2.5" orient="auto-start-reverse">
+    <polygon points="8 0, 0 2.5, 8 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+</defs>
+<g class="subgraph" data-id="Heads" data-label="Task Classification Heads">
+  <rect x="40" y="504.30000000000007" width="1045.252" height="113.80000000000001" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="40" y="504.30000000000007" width="1045.252" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="52" y="518.3000000000001" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Task Classification Heads</text>
+</g>
+<polyline class="edge" data-from="TENSOR" data-to="STEM" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="415.20424999999983,76.9 415.20424999999983,133.35000000000002" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="STEM" data-to="TARGET_CONV" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="415.20424999999983,187.15000000000003 415.20424999999983,226.70000000000002" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="CROP_MASK" data-to="GATE" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="710.0477499999998,170.25000000000003 710.0477499999998,226.70000000000002" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="TARGET_CONV" data-to="APPLY_GATE" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="415.20424999999983,280.5 415.20424999999983,304.5 562.6259999999999,304.5 562.6259999999999,328.5" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="GATE" data-to="APPLY_GATE" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="710.0477499999998,280.5 710.0477499999998,304.5 562.6259999999999,304.5 562.6259999999999,328.5" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="APPLY_GATE" data-to="GAP" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="562.6259999999999,365.4 562.6259999999999,413.4" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="GAP" data-to="H_STR" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="562.6259999999999,450.29999999999995 562.6259999999999,499.3 215.54199999999997,499.3 215.54199999999997,548.3000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="GAP" data-to="H_MOI" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="562.6259999999999,450.29999999999995 562.6259999999999,499.3 562.626,499.3 562.626,548.3000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="GAP" data-to="H_YLD" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="562.6259999999999,450.29999999999995 562.6259999999999,499.3 909.7099999999998,499.3 909.7099999999998,548.3000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="H_STR" data-to="OUT_S" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="215.54199999999997,602.1 215.54199999999994,672.1000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="H_MOI" data-to="OUT_M" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="562.626,602.1 562.626,672.1000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="H_YLD" data-to="OUT_Y" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="909.7099999999998,602.1 909.7099999999998,672.1000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<g class="node" data-id="TENSOR" data-label="11-Channel Input Tensor: (B, 11, H, W)" data-shape="rectangle">
+  <rect x="294.9352499999999" y="40" width="240.53799999999993" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="415.20424999999983" y="58.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">11-Channel Input Tensor: (B, 11, H, W)</text>
+</g>
+<g class="node" data-id="STEM" data-label="Shared Backbone Features Stem
+ResNet18 or EfficientNet-B0 (Adapted Conv1)" data-shape="rectangle">
+  <rect x="268.62974999999983" y="133.35000000000002" width="293.149" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="415.20424999999983" y="160.25000000000003" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="415.20424999999983" dy="-3.9000000000000012">Shared Backbone Features Stem</tspan><tspan x="415.20424999999983" dy="16.900000000000002">ResNet18 or EfficientNet-B0 (Adapted Conv1)</tspan></text>
+</g>
+<g class="node" data-id="TARGET_CONV" data-label="target_conv_layer
+(ResNet18 layer4 / EffNet features[-1])" data-shape="rectangle">
+  <rect x="289.74824999999987" y="226.70000000000002" width="250.91199999999995" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="415.20424999999983" y="253.60000000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="415.20424999999983" dy="-3.9000000000000012">target_conv_layer</tspan><tspan x="415.20424999999983" dy="16.900000000000002">(ResNet18 layer4 / EffNet features[-1])</tspan></text>
+</g>
+<g class="node" data-id="CROP_MASK" data-label="U-Net Canopy Mask (Classes 1 &amp; 2)" data-shape="rectangle">
+  <rect x="589.7787499999998" y="133.35000000000002" width="240.53799999999998" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="710.0477499999998" y="151.8" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">U-Net Canopy Mask (Classes 1 &amp; 2)</text>
+</g>
+<g class="node" data-id="GATE" data-label="Soft Spatial Gate:
+Gate = 0.25 + 0.75 · CropMask" data-shape="rectangle">
+  <rect x="601.2642499999998" y="226.70000000000002" width="217.567" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="710.0477499999998" y="253.60000000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="710.0477499999998" dy="-3.9000000000000012">Soft Spatial Gate:</tspan><tspan x="710.0477499999998" dy="16.900000000000002">Gate = 0.25 + 0.75 · CropMask</tspan></text>
+</g>
+<g class="node" data-id="APPLY_GATE" data-label="X_gated = Target_Conv ⊙ Gate" data-shape="rectangle">
+  <rect x="452.7309999999999" y="328.5" width="219.78999999999996" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="562.6259999999999" y="346.95" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">X_gated = Target_Conv ⊙ Gate</text>
+</g>
+<g class="node" data-id="GAP" data-label="AdaptiveAvgPool2d(1, 1) → Flatten (512 or 1280)" data-shape="rectangle">
+  <rect x="412.7169999999999" y="413.4" width="299.8179999999999" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="562.6259999999999" y="431.84999999999997" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">AdaptiveAvgPool2d(1, 1) → Flatten (512 or 1280)</text>
+</g>
+<g class="node" data-id="OUT_S" data-label="Stress Logits [Healthy, Mild, Severe]" data-shape="rectangle">
+  <rect x="88.23349999999996" y="672.1" width="254.61699999999996" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="215.54199999999994" y="690.5500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Stress Logits [Healthy, Mild, Severe]</text>
+</g>
+<g class="node" data-id="OUT_M" data-label="Moisture Logits [Dry, Optimal, Wet]" data-shape="rectangle">
+  <rect x="443.098" y="672.1" width="239.05599999999995" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="562.626" y="690.5500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Moisture Logits [Dry, Optimal, Wet]</text>
+</g>
+<g class="node" data-id="OUT_Y" data-label="Yield Logits [Low, Medium, High]" data-shape="rectangle">
+  <rect x="795.7394999999998" y="672.1" width="227.94099999999995" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="909.7099999999998" y="690.5500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Yield Logits [Low, Medium, High]</text>
+</g>
+<g class="node" data-id="H_STR" data-label="Stress Head
+FC(dim→128) → ReLU → Dropout(0.25) → FC(128→3)" data-shape="rectangle">
+  <rect x="56" y="548.3000000000001" width="319.08399999999995" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="215.54199999999997" y="575.2" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="215.54199999999997" dy="-3.9000000000000012">Stress Head</tspan><tspan x="215.54199999999997" dy="16.900000000000002">FC(dim→128) → ReLU → Dropout(0.25) → FC(128→3)</tspan></text>
+</g>
+<g class="node" data-id="H_MOI" data-label="Moisture Head
+FC(dim→128) → ReLU → Dropout(0.25) → FC(128→3)" data-shape="rectangle">
+  <rect x="403.08399999999995" y="548.3000000000001" width="319.08399999999995" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="562.626" y="575.2" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="562.626" dy="-3.9000000000000012">Moisture Head</tspan><tspan x="562.626" dy="16.900000000000002">FC(dim→128) → ReLU → Dropout(0.25) → FC(128→3)</tspan></text>
+</g>
+<g class="node" data-id="H_YLD" data-label="Yield Head
+FC(dim→128) → ReLU → Dropout(0.25) → FC(128→3)" data-shape="rectangle">
+  <rect x="750.1679999999999" y="548.3000000000001" width="319.08399999999995" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="909.7099999999998" y="575.2" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="909.7099999999998" dy="-3.9000000000000012">Yield Head</tspan><tspan x="909.7099999999998" dy="16.900000000000002">FC(dim→128) → ReLU → Dropout(0.25) → FC(128→3)</tspan></text>
+</g>
+</svg>

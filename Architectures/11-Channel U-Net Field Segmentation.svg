@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 806.1979999999999 1466.7" width="806.1979999999999" height="1466.7" style="--bg:#FFFFFF;--fg:#1E293B;--line:#64748B;--muted:#475569;--surface:#F8FAFC;--border:#CBD5E1;background:var(--bg)">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap');
+  text { font-family: 'Inter', system-ui, sans-serif; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+  <marker id="arrowhead" markerWidth="8" markerHeight="5" refX="7" refY="2.5" orient="auto">
+    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+  <marker id="arrowhead-start" markerWidth="8" markerHeight="5" refX="1" refY="2.5" orient="auto-start-reverse">
+    <polygon points="8 0, 0 2.5, 8 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+</defs>
+<g class="subgraph" data-id="ResNet18_Encoder" data-label="Encoder Stages">
+  <rect x="212.65299999999993" y="232.70000000000002" width="405.0305" height="436.5" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="212.65299999999993" y="232.70000000000002" width="405.0305" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="224.65299999999993" y="246.70000000000002" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Encoder Stages</text>
+</g>
+<g class="subgraph" data-id="Decoder_With_Skips" data-label="Decoder Stages">
+  <rect x="40" y="797.5" width="726.198" height="436.5" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="40" y="797.5" width="726.198" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="52" y="811.5" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Decoder Stages</text>
+</g>
+<polyline class="edge" data-from="IN11" data-to="ADAPT" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="296.6814999999999,76.9 296.6814999999999,124.9" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="OUT_HEAD" data-to="MASK" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="244.8115,1324.9 244.8115,1372.9" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="ADAPT" data-to="ENC0" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="296.6814999999999,178.70000000000002 296.6814999999999,276.70000000000005" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="ENC4" data-to="UP4" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="505.1264999999999,653.2 505.1264999999999,779.5 571.3478333333333,779.5 571.3478333333333,779.5 618.3956666666667,779.5 618.3956666666666,841.5" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="ENC3" data-to="UP4" data-style="dotted" data-arrow-start="false" data-arrow-end="true" data-label="Skip 256ch" points="419.16233333333327,568.3000000000001 419.16233333333327,580.3000000000001 397.56949999999995,580.3000000000001 397.5695,711.2 451.66816666666665,711.2 451.66816666666665,779.5 486.59333333333336,779.5 486.5933333333333,841.5" fill="none" stroke="var(--_line)" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="ENC2" data-to="UP3" data-style="dotted" data-arrow-start="false" data-arrow-end="true" data-label="Skip 128ch" points="366.61883333333327,483.4000000000001 366.61883333333327,495.4000000000001 343.79099999999994,495.4000000000001 343.791,890.4 382.9825833333333,890.4 382.9825833333333,926.4" fill="none" stroke="var(--_line)" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="ENC1" data-to="UP2" data-style="dotted" data-arrow-start="false" data-arrow-end="true" data-label="Skip 64ch" points="316.6688333333333,398.50000000000006 316.6688333333333,410.50000000000006 293.7174999999999,410.50000000000006 293.7174999999999,711.2 257.93862499999994,711.2 257.93862499999994,779.5 241.66224999999997,779.5 241.66224999999997,975.3 281.8418333333333,975.3 281.8418333333333,1011.3" fill="none" stroke="var(--_line)" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="ENC0" data-to="UP1" data-style="dotted" data-arrow-start="false" data-arrow-end="true" data-label="Skip 64ch" points="274.0053333333333,313.6 274.0053333333333,325.6 247.71949999999993,325.6 247.71949999999993,711.2 175.17974999999996,711.2 175.17974999999996,779.5 144.72049999999996,779.5 144.7205,1060.2 181.8743333333333,1060.2 181.8743333333333,1096.2" fill="none" stroke="var(--_line)" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="FINAL_UP" data-to="OUT_HEAD" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="244.8115,1218 244.8115,1288" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="ENC0" data-to="ENC1" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="319.3576666666666,313.6 319.3576666666666,325.6 345.6434999999999,325.6 345.6434999999999,361.6" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="ENC1" data-to="ENC2" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="374.61816666666664,398.5 374.61816666666664,410.5 397.56949999999995,410.5 397.56949999999995,446.5" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="ENC2" data-to="ENC3" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="428.52016666666657,483.40000000000003 428.52016666666657,495.4000000000001 451.34799999999996,495.4000000000001 451.34799999999996,531.4000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="ENC3" data-to="ENC4" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="483.5336666666666,568.3000000000001 483.5336666666666,580.3000000000001 505.12649999999996,580.3000000000001 505.12649999999996,616.3000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="UP4" data-to="UP3" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="552.4945,878.4 552.4945,890.4 513.3029166666666,890.4 513.3029166666666,926.4" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="UP3" data-to="UP2" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="448.14275,963.3 448.14275,975.3 407.96316666666667,975.3 407.96316666666667,1011.3" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="UP2" data-to="UP1" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="344.9025,1048.2 344.9025,1060.2 307.7486666666666,1060.2 307.7486666666666,1096.2" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="UP1" data-to="FINAL_UP" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="244.8115,1133.1 244.8115,1181.1" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<g class="edge-label" data-from="ENC3" data-to="UP4" data-label="Skip 256ch">
+  <rect x="416.1681666666666" y="718.2" width="70.516" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="451.4261666666666" y="733.35" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Skip 256ch</text>
+</g>
+<g class="edge-label" data-from="ENC2" data-to="UP3" data-label="Skip 128ch">
+  <rect x="310.29099999999994" y="718.2" width="66.952" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="343.76699999999994" y="733.35" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Skip 128ch</text>
+</g>
+<g class="edge-label" data-from="ENC1" data-to="UP2" data-label="Skip 64ch">
+  <rect x="225.43862499999994" y="718.2" width="64.57600000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="257.72662499999996" y="733.35" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Skip 64ch</text>
+</g>
+<g class="edge-label" data-from="ENC0" data-to="UP1" data-label="Skip 64ch">
+  <rect x="142.67974999999996" y="718.2" width="64.57600000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="174.96774999999997" y="733.35" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Skip 64ch</text>
+</g>
+<g class="node" data-id="IN11" data-label="Input: (B, 11, H, W)" data-shape="rectangle">
+  <rect x="230.13499999999993" y="40" width="133.09300000000002" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="296.6814999999999" y="58.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Input: (B, 11, H, W)</text>
+</g>
+<g class="node" data-id="ADAPT" data-label="Adapted Conv1 (11→64, 7×7, s=2)
+RGB weights cloned, indices initialized to 0.5×mean(RGB)" data-shape="rectangle">
+  <rect x="112.68649999999997" y="124.9" width="367.98999999999995" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="296.6814999999999" y="151.8" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="296.6814999999999" dy="-3.9000000000000012">Adapted Conv1 (11→64, 7×7, s=2)</tspan><tspan x="296.6814999999999" dy="16.900000000000002">RGB weights cloned, indices initialized to 0.5×mean(RGB)</tspan></text>
+</g>
+<g class="node" data-id="OUT_HEAD" data-label="Conv2d(32→4, 1×1) + Interpolate to (H,W)" data-shape="rectangle">
+  <rect x="113.42750000000004" y="1288" width="262.7679999999999" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="244.8115" y="1306.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Conv2d(32→4, 1×1) + Interpolate to (H,W)</text>
+</g>
+<g class="node" data-id="MASK" data-label="Segmentation Logits: (B, 4, H, W)
+[Soil, Healthy, Stressed, Salt]" data-shape="rectangle">
+  <rect x="132.69350000000003" y="1372.9" width="224.23599999999993" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="244.8115" y="1399.8000000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="244.8115" dy="-3.9000000000000012">Segmentation Logits: (B, 4, H, W)</tspan><tspan x="244.8115" dy="16.900000000000002">[Soil, Healthy, Stressed, Salt]</tspan></text>
+</g>
+<g class="node" data-id="ENC0" data-label="enc0 (64ch, H/2)" data-shape="rectangle">
+  <rect x="228.65299999999993" y="276.70000000000005" width="136.05700000000002" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="296.6814999999999" y="295.15000000000003" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">enc0 (64ch, H/2)</text>
+</g>
+<g class="node" data-id="ENC1" data-label="enc1 / layer1 (64ch, H/4)" data-shape="rectangle">
+  <rect x="258.7194999999999" y="361.6" width="173.84799999999998" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="345.6434999999999" y="380.05" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">enc1 / layer1 (64ch, H/4)</text>
+</g>
+<g class="node" data-id="ENC2" data-label="enc2 / layer2 (128ch, H/8)" data-shape="rectangle">
+  <rect x="304.7175" y="446.5" width="185.70399999999998" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="397.56949999999995" y="464.95" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">enc2 / layer2 (128ch, H/8)</text>
+</g>
+<g class="node" data-id="ENC3" data-label="enc3 / layer3 (256ch, H/16)" data-shape="rectangle">
+  <rect x="354.79099999999994" y="531.4000000000001" width="193.11399999999998" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="451.34799999999996" y="549.8500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">enc3 / layer3 (256ch, H/16)</text>
+</g>
+<g class="node" data-id="ENC4" data-label="enc4 / layer4 (512ch, H/32)" data-shape="rectangle">
+  <rect x="408.56949999999995" y="616.3000000000001" width="193.114" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="505.12649999999996" y="634.7500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">enc4 / layer4 (512ch, H/32)</text>
+</g>
+<g class="node" data-id="UP4" data-label="up4: Bilinear (512) + Skip enc3 (256) → ConvReluBlock (256ch)" data-shape="rectangle">
+  <rect x="354.791" y="841.5" width="395.407" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="552.4945" y="859.95" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">up4: Bilinear (512) + Skip enc3 (256) → ConvReluBlock (256ch)</text>
+</g>
+<g class="node" data-id="UP3" data-label="up3: Bilinear (256) + Skip enc2 (128) → ConvReluBlock (128ch)" data-shape="rectangle">
+  <rect x="252.66224999999997" y="926.4" width="390.961" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="448.14275" y="944.85" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">up3: Bilinear (256) + Skip enc2 (128) → ConvReluBlock (128ch)</text>
+</g>
+<g class="node" data-id="UP2" data-label="up2: Bilinear (128) + Skip enc1 (64)  → ConvReluBlock (64ch)" data-shape="rectangle">
+  <rect x="155.7205" y="1011.3" width="378.364" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="344.9025" y="1029.75" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">up2: Bilinear (128) + Skip enc1 (64)  → ConvReluBlock (64ch)</text>
+</g>
+<g class="node" data-id="UP1" data-label="up1: Bilinear (64)  + Skip enc0 (64)  → ConvReluBlock (64ch)" data-shape="rectangle">
+  <rect x="56" y="1096.2" width="377.623" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="244.8115" y="1114.65" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">up1: Bilinear (64)  + Skip enc0 (64)  → ConvReluBlock (64ch)</text>
+</g>
+<g class="node" data-id="FINAL_UP" data-label="final_up: Bilinear → ConvReluBlock (32ch)" data-shape="rectangle">
+  <rect x="103.7945" y="1181.1" width="282.034" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="244.8115" y="1199.55" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">final_up: Bilinear → ConvReluBlock (32ch)</text>
+</g>
+</svg>

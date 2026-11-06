@@ -210,6 +210,7 @@ def load_real_dji_folders_or_fallback(
             + glob.glob(os.path.join(search_root, "*.tiff"))
             + glob.glob(os.path.join(search_root, "**", "*.JPG"), recursive=True)
             + glob.glob(os.path.join(search_root, "**", "*.jpg"), recursive=True)
+            + glob.glob(os.path.join(search_root, "._*"))
         )
         # Deduplicate while preserving sorted order (important on case-insensitive macOS APFS)
         seen_paths = set()

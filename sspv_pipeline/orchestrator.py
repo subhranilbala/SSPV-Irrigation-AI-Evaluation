@@ -261,7 +261,7 @@ class SSPVPipelineOrchestrator:
         axes[0, 0].grid(True, alpha=0.3)
 
         sns.boxplot(
-            data=df_metrics, x="plot_type", y="stress_pixel_ratio", palette="Set2", ax=axes[0, 1]
+            data=df_metrics, x="plot_type", y="stress_pixel_ratio", hue="plot_type", palette="Set2", legend=False, ax=axes[0, 1]
         )
         axes[0, 1].set_title("Crop Stress Pixel Proportion (ANOVA Comparison)")
         axes[0, 1].set_xlabel("Irrigation Type")
