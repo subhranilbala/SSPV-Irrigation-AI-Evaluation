@@ -505,6 +505,9 @@ class TestSSPVPipelineComprehensive(unittest.TestCase):
         mock_st.selectbox = lambda label, options, **kwargs: options[0]
         mock_st.checkbox = MagicMock(return_value=False)
         mock_st.file_uploader = MagicMock(return_value=None)
+        mock_st.tabs = lambda tabs: [MagicMock() for _ in tabs]
+        mock_st.table = MagicMock()
+        mock_st.html = MagicMock()
         mock_st.cache_resource = lambda f: f
 
         # Run 1: Default execution with fallback dataset and non-existing Crops Data

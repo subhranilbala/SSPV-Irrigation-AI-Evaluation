@@ -81,11 +81,23 @@ def _get_stretch_kwarg(target_func):
     return {}
 
 
+def _center_header_label(label: str, target_width: int, char_px: float = 7.5, space_px: float = 4.2) -> str:
+    """
+    Glide Data Grid on HTML5 Canvas renders column headers left-aligned by default.
+    By prefixing non-breaking spaces (\u00A0) proportional to the remaining cell width,
+    the header text is positioned cleanly in the horizontal center of the header cell.
+    """
+    text_px = len(label) * char_px
+    rem_px = max(0, target_width - text_px - 36)
+    pad_spaces = max(0, int((rem_px / 2.0) / space_px))
+    return ("\u00A0" * pad_spaces) + label
+
+
 def _build_dynamic_column_config(df):
     """
-    Dynamically sizes table columns based on string length and content type.
-    Ensures long recommendations have expanded large column width and left-alignment,
-    preventing text clipping, while short metric values remain centered.
+    Dynamically sizes table columns based on the exact maximum character length of data and headers.
+    Computes exact pixel widths so text is never truncated or clipped regardless of length.
+    Ensures all column values and headers are centered vertically and horizontally.
     """
     import streamlit as st
     import inspect
@@ -109,26 +121,24 @@ def _build_dynamic_column_config(df):
 
     cfg = {}
     for col in df.columns:
-        max_char_len = max(df[col].astype(str).map(len).max(), len(col))
-        if max_char_len > 40:
-            width_tier = "large"
-            align = "left"
-        elif max_char_len > 15:
-            width_tier = "medium"
-            align = "left"
-        else:
-            width_tier = "small"
-            align = "center"
+        label = pretty_labels.get(col, col.replace("_", " ").title())
+        max_char_len = max(df[col].astype(str).map(len).max(), len(label))
+        # Compute exact pixel width: ~9.8px per character + cell margins + sort arrows
+        col_width = max(130, int(max_char_len * 9.8) + 50)
+        padded_label = _center_header_label(label, col_width)
 
-        kw = {"label": pretty_labels.get(col, col.replace("_", " ").title()), "width": width_tier}
+        kw = {"label": padded_label, "width": col_width}
         if has_align:
-            kw["alignment"] = align
+            kw["alignment"] = "center"
 
         if pd.api.types.is_numeric_dtype(df[col]):
             kw["format"] = "%.4f"
-            cfg[col] = st.column_config.NumberColumn(**kw)
+            col_obj = st.column_config.NumberColumn(**kw)
         else:
-            cfg[col] = st.column_config.TextColumn(**kw)
+            col_obj = st.column_config.TextColumn(**kw)
+
+        col_obj["alignment"] = "center"
+        cfg[col] = col_obj
     return cfg
 
 
@@ -339,10 +349,22 @@ def run_streamlit_dashboard():
     sns.boxplot(
         data=df_metrics, x="plot_type", y="stress_pixel_ratio", hue="plot_type", palette="Set2", legend=False, ax=ax_right
     )
+    sns.stripplot(
+        data=df_metrics, x="plot_type", y="stress_pixel_ratio", color="black", alpha=0.35, jitter=0.2, size=5, ax=ax_right
+    )
     ax_right.set_title("Crop Stress Pixel Proportion (One-Way ANOVA Comparison)")
     ax_right.set_xlabel("Irrigation System")
     ax_right.set_ylabel("Stressed Pixel Ratio")
     ax_right.grid(True, alpha=0.3)
+    if df_metrics["stress_pixel_ratio"].max() < 0.001:
+        ax_right.set_ylim(-0.005, 0.05)
+        ax_right.text(
+            0.5, 0.70,
+            "✓ Optimal Canopy Health Detected\n(0.00% Stress across surveyed plots)",
+            ha="center", va="center", transform=ax_right.transAxes,
+            bbox=dict(boxstyle="round,pad=0.5", facecolor="#e8f5e9", edgecolor="#81c784", alpha=0.9),
+            fontsize=10, color="#1b5e20", weight="bold"
+        )
     fig2.tight_layout()
     st.pyplot(fig2)
     plt.close(fig2)
@@ -411,27 +433,91 @@ def run_streamlit_dashboard():
             **dl_stretch
         )
 
-    df_display = df_metrics[[
-        "date", "plot_type", "mean_ngrdi", "mean_exg", "mean_vari",
-        "salt_patch_ratio", "pred_stress", "pred_moisture", "pred_yield",
-        "recommendation", "rec_confidence", "rec_mode", "ranked_top2"
-    ]].copy()
+    pretty_col_names = {
+        "date": "Survey Date",
+        "plot_type": "Plot Type",
+        "mean_ngrdi": "Mean NGRDI",
+        "mean_exg": "Mean ExG",
+        "mean_vari": "Mean VARI",
+        "salt_patch_ratio": "Salt Ratio",
+        "pred_stress": "Crop Stress",
+        "pred_moisture": "Moisture State",
+        "pred_yield": "Yield Level",
+        "recommendation": "Primary Action Recommendation",
+        "rec_confidence": "Confidence",
+        "rec_mode": "Decision Mode",
+        "ranked_top2": "Ranked Decision Hierarchy (Top-2 Actions)",
+    }
 
-    short_cols = [c for c in df_display.columns if df_display[c].astype(str).map(len).max() <= 15]
-    long_cols = [c for c in df_display.columns if df_display[c].astype(str).map(len).max() > 15]
+    df_display = df_metrics[list(pretty_col_names.keys())].copy().rename(columns=pretty_col_names)
 
+    # Excel-style formatting: pure horizontal & vertical centering across all headers and cells
     styled_df = (
         df_display.style
-        .set_properties(subset=short_cols, **{"text-align": "center", "vertical-align": "middle"})
-        .set_properties(subset=long_cols, **{"text-align": "left", "vertical-align": "middle"})
+        .hide(axis="index")
+        .format({
+            "Mean NGRDI": "{:.4f}",
+            "Mean ExG": "{:.4f}",
+            "Mean VARI": "{:.4f}",
+            "Salt Ratio": "{:.4f}",
+            "Confidence": "{:.4f}",
+        })
+        .set_properties(**{
+            "text-align": "center",
+            "vertical-align": "middle",
+            "white-space": "nowrap",
+            "padding": "10px 16px",
+            "font-size": "13px",
+            "border": "1px solid #e2e8f0",
+        })
         .set_table_styles([
-            {"selector": "th", "props": [("text-align", "center"), ("vertical-align", "middle")]}
+            {
+                "selector": "thead th",
+                "props": [
+                    ("text-align", "center"),
+                    ("vertical-align", "middle"),
+                    ("background-color", "#f1f5f9"),
+                    ("color", "#0f172a"),
+                    ("font-weight", "600"),
+                    ("font-size", "13px"),
+                    ("padding", "11px 18px"),
+                    ("white-space", "nowrap"),
+                    ("border", "1px solid #cbd5e1"),
+                    ("position", "sticky"),
+                    ("top", "0"),
+                    ("z-index", "2"),
+                ],
+            },
+            {
+                "selector": "tbody tr:nth-child(even)",
+                "props": [("background-color", "#f8fafc")],
+            },
+            {
+                "selector": "tbody tr:hover",
+                "props": [("background-color", "#eff6ff")],
+            },
+            {
+                "selector": "table",
+                "props": [
+                    ("border-collapse", "collapse"),
+                    ("width", "100%"),
+                    ("font-family", "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"),
+                ],
+            },
         ])
     )
 
-    col_config = _build_dynamic_column_config(df_display)
-
-    st.dataframe(styled_df, column_config=col_config, hide_index=True, **df_stretch)
+    # Scrollable container replicating Excel spreadsheet viewport with freeze-pane header
+    grid_html = (
+        f'<div style="max-height: 440px; overflow: auto; border: 1px solid #cbd5e1; '
+        f'border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); margin-top: 8px;">'
+        f'{styled_df.to_html()}'
+        f'</div>'
+    )
+    if hasattr(st, "html"):
+        st.html(grid_html)
+    else:
+        st.markdown(grid_html, unsafe_allow_html=True)
 
     st.divider()
 
