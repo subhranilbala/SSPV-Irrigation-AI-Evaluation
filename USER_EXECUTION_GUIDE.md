@@ -39,6 +39,12 @@
 ### Software Environment:
 - Python 3.10, 3.11, 3.12, or 3.14.
 - Pre-configured virtual environment located in `venv/`.
+- Required dependencies installation:
+  ```bash
+  pip install -r requirements.txt
+  # Or manually:
+  pip install torch torchvision numpy scipy pandas matplotlib seaborn scikit-learn pillow streamlit rasterio opencv-python reportlab
+  ```
 
 ---
 
@@ -330,12 +336,25 @@ A high-resolution ($200\text{ DPI}, 14\times10\text{ inches}$) 4-panel graphic d
 
 ---
 
-### Output 5: Thesis Chapter Text Report `MTP_Thesis_Evaluation_Chapter_Report.txt`
-A pre-formatted, publication-ready academic report:
+### Output 5a: Formal Thesis Chapter PDF Report `MTP_Thesis_Evaluation_Chapter_Report.pdf`
+A publication-grade, multi-page formal academic evaluation chapter compiled with ReportLab:
+- **Formal Headers:** Official *Indian Institute of Technology Jodhpur — School of Artificial Intelligence & Data Science* banner.
+- **Candidate & Supervisor Attribution:** Subhranil Bala (`M25AI2038`) & Dr. Anand Krishnan Plappally.
+- **Hypothesis Testing Tables:** Formal tables detailing Welch's t-test ($t, p$), One-Way ANOVA across plots and survey dates, Cohen's $d$ effect sizes, and temporal regression slopes.
+- **RuTAG Human Ecology & Hydrology Audit:** Capillary stability ratios (Gangotri steady percolation), root-zone salt protection status, and estimated groundwater conserved (~38.5%).
+- **Embedded Publication Graphic:** Vector-embedded 4-panel multi-date temporal trend graphic.
+- **Actionable Decision Distribution:** Complete ranked recommendation percentages.
+- **Formal Academic Signatures:** Endorsement lines for candidate and thesis supervisor.
+
+---
+
+### Output 5b: Thesis Chapter Text Report `MTP_Thesis_Evaluation_Chapter_Report.txt`
+A pre-formatted, publication-ready academic report in plain text:
 - Contains IIT Jodhpur header, roll number, project title, and supervisor attribution.
 - Section 1: Executive Summary & Statistical Comparison (t-test stats, ANOVA $F$, Cohen's $d$).
 - Section 2: Temporal Growth Dynamics & Slope Z-test.
 - Section 3: Recommendation Distribution breakdown (% of patches needing refill, optimal, etc.).
+- Section 4: RuTAG Human Ecology & Traditional Hydrology Audit.
 - Can be directly copy-pasted into LaTeX, Microsoft Word, or Markdown thesis draft chapters.
 
 ---

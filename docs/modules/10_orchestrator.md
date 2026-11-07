@@ -31,25 +31,26 @@ In each training epoch:
 5. Returns training history metrics (`unet_loss`, `cnn_loss`, `seg_acc`, `stress_acc`).
 
 ### 2.3 Comprehensive Multi-Date Inference (`evaluate_all_dates`)
-Evaluates all patches across all survey dates in `eval` mode without gradients:
-- Applies U-Net crop gating to Multi-Task CNN.
-- Extracts mean plot indices (`NGRDI`, `ExG`, `VARI`, `TGI`, `ExB`).
+Evaluates all patches across all survey dates in `eval` mode without gradients using **vectorized batched inference ($B=16$)**:
+- Batched U-Net segmentation forward pass on MPS/CUDA.
+- Applies batched binary crop gating $\mathbf{M}_{\text{crop}}$ to Multi-Task CNN.
+- Retrieves pre-computed indices in $\mathcal{O}(1)$ time without redundant math.
 - Gathers stress and salt patch area proportions.
 - Passes all parameters into [`HybridRecommendationEngine`](file:///Users/subhranilbala/Downloads/SSPV-Irrigation-AI-Evaluation/sspv_pipeline/recommendation.py#L15).
 - Compiles the global metrics DataFrame and executes the [`StatisticalComparisonEngine`](file:///Users/subhranilbala/Downloads/SSPV-Irrigation-AI-Evaluation/sspv_pipeline/statistics_engine.py#L18).
 
-### 2.4 Thesis Artifact Exportation (`save_thesis_artifacts`)
+### 2.4 Formal Thesis PDF & Text Generation (`generate_thesis_pdf_report`)
+Uses **ReportLab** to compile a formal, multi-page publication PDF with official IIT Jodhpur headers, statistical hypothesis tables, RuTAG human-ecology audit, vector-embedded 4-panel figures, and candidate/supervisor signature blocks.
+
+### 2.5 Thesis Artifact Exportation (`save_thesis_artifacts`)
 Saves all production assets to `--output_dir`:
 1. `sspv_7date_metrics.csv`: Full evaluation table.
-2. `statistical_report.json`: Formatted JSON of all t-test stats, ANOVA $F$-scores, Cohen's $d$, and regression slope $Z$-test.
+2. `statistical_report.json`: Formatted JSON of all t-test stats, ANOVA $F$-scores, Cohen's $d$, regression slope $Z$-test, and RuTAG validation.
 3. `unet_11ch_weights.pth`: PyTorch binary state dictionary.
 4. `multitask_cnn_11ch_weights.pth`: PyTorch binary state dictionary.
-5. `thesis_sspv_vs_control_summary.png`: 4-panel publication graphic (200 DPI):
-   - NGRDI temporal growth trend
-   - Crop stress pixel proportion boxplot
-   - ExG temporal stability line plot
-   - VARI temporal distribution consistency plot
-6. `MTP_Thesis_Evaluation_Chapter_Report.txt`: Ready-to-copy academic chapter evaluation text report.
+5. `thesis_sspv_vs_control_summary.png`: 4-panel publication graphic (200 DPI).
+6. `MTP_Thesis_Evaluation_Chapter_Report.pdf`: Formal academic chapter evaluation PDF report.
+7. `MTP_Thesis_Evaluation_Chapter_Report.txt`: Ready-to-copy academic chapter evaluation text draft.
 
 ---
 

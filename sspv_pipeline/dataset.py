@@ -6,6 +6,8 @@ Handles multi-date drone folders and synthesizes realistic benchmark data.
 
 import os
 import glob
+import tempfile
+import concurrent.futures
 from datetime import datetime
 from typing import Dict, List, Optional, Any
 
@@ -14,7 +16,7 @@ from PIL import Image
 import torch
 from torch.utils.data import Dataset
 
-from .config import HAS_CV2
+from .config import HAS_CV2, REGIONAL_PROFILES, DEFAULT_REGION_KEY
 from .preprocessing import UAVPreprocessor
 from .feature_engineering import VegetationIndexExtractor
 from .pseudo_labeling import BiophysicalPseudoLabeler
@@ -62,16 +64,20 @@ class SSPVDronePatchDataset(Dataset):
             "date": item["date"],
             "day_num": item["day_num"],
             "plot_type": item["plot_type"],
-            "rgb": rgb
+            "rgb": rgb,
+            "indices": indices
         }
 
 
 def generate_realistic_7date_field_dataset(
-    patch_size: int = 128, patches_per_date: int = 6
+    patch_size: int = 128,
+    patches_per_date: int = 6,
+    region_key: str = DEFAULT_REGION_KEY
 ) -> List[Dict[str, Any]]:
     """
     Generates a physically realistic 7-date dataset matching the exact dates in the
-    user's Finder screenshot (`12-11-2024` through `05-01-2025`), modeling:
+    user's Finder screenshot (`12-11-2024` through `05-01-2025`), calibrated to the
+    selected regional agro-ecological soil profile (e.g. Jodhpur/Kaylana Aridisol, Nagaur, etc.):
     - Circular SSPV porous clay vessels with green vegetation rings & white salt halos (Slide 5 & 7)
     - Conventional row-irrigated control plots with higher spatial patchiness and temporal variance
     """
@@ -85,6 +91,9 @@ def generate_realistic_7date_field_dataset(
         ("15-01-2025", 65),
     ]
 
+    reg_info = REGIONAL_PROFILES.get(region_key, REGIONAL_PROFILES[DEFAULT_REGION_KEY])
+    base_r, base_g, base_b = reg_info["baseline_soil_rgb"]
+
     rng = np.random.default_rng(2026)
     samples = []
     yy, xx = np.mgrid[0:patch_size, 0:patch_size]
@@ -95,10 +104,10 @@ def generate_realistic_7date_field_dataset(
         for p_idx in range(patches_per_date):
             plot_type = "SSPV" if p_idx % 2 == 0 else "Control"
 
-            # Base arid sandy soil of Rajasthan (IIT Jodhpur / Nagaur soil profile)
-            soil_r = rng.normal(0.46, 0.03, (patch_size, patch_size))
-            soil_g = rng.normal(0.38, 0.03, (patch_size, patch_size))
-            soil_b = rng.normal(0.27, 0.02, (patch_size, patch_size))
+            # Regional baseline soil calibrated to agro-ecological profile
+            soil_r = rng.normal(base_r, 0.03, (patch_size, patch_size))
+            soil_g = rng.normal(base_g, 0.03, (patch_size, patch_size))
+            soil_b = rng.normal(base_b, 0.02, (patch_size, patch_size))
             rgb = np.stack([soil_r, soil_g, soil_b], axis=-1)
 
             if plot_type == "SSPV":
@@ -238,20 +247,31 @@ def load_real_dji_folders_or_fallback(
             f"{mode_str} (out of {len(unique_files)} found)"
         )
 
-        for img_path in img_files:
-            raw_img, _ = preprocessor.load_image(img_path)
-            # Resize huge 8192x5460 frame to 1024x682 for fast co-registration & patch extraction
-            if HAS_CV2:
-                resized = cv2.resize(raw_img, (1024, 682), interpolation=cv2.INTER_AREA)
-            else:
-                pil_im = Image.fromarray(raw_img.astype(np.uint8)).resize((1024, 682), Image.BILINEAR)
-                resized = np.asarray(pil_im)
-            clean_rgb = preprocessor.process(resized, reference_img=ref_img)
-            if ref_img is None:
-                ref_img = clean_rgb
+        # Persistent disk cache directory for preprocessed patches
+        cache_dir = os.path.join(data_dir, ".sspv_cache")
+        try:
+            os.makedirs(cache_dir, exist_ok=True)
+        except OSError:
+            cache_dir = os.path.join(tempfile.gettempdir(), ".sspv_cache")
+            os.makedirs(cache_dir, exist_ok=True)
+
+        def _process_one_frame(img_path: str):
+            mtime = int(os.path.getmtime(img_path)) if os.path.exists(img_path) else 0
+            cache_file = os.path.join(cache_dir, f"{os.path.basename(img_path)}_{mtime}_{patch_size}.npz")
+
+            # Check if preprocessed patches are already in persistent cache
+            if os.path.exists(cache_file):
+                try:
+                    cached_data = np.load(cache_file, mmap_mode="r")
+                    return cached_data["sspv"], cached_data["ctrl"], os.path.basename(img_path)
+                except Exception:
+                    pass
+
+            # Fast hardware-accelerated downscaled read (1024x682) directly during decompression
+            raw_img, _ = preprocessor.load_image(img_path, target_size=(1024, 682))
+            clean_rgb = preprocessor.process(raw_img, reference_img=ref_img)
 
             H, W, _ = clean_rgb.shape
-            # Extract multiple patches from Upper-Right (SSPV mounds) and Lower-Right (Control rows)
             coords_sspv = [
                 (0, patch_size, W - patch_size, W),
                 (0, patch_size, max(0, W - 2 * patch_size), max(patch_size, W - patch_size)),
@@ -261,26 +281,49 @@ def load_real_dji_folders_or_fallback(
                 (max(0, H - 2 * patch_size), max(patch_size, H - patch_size), W - patch_size, W),
             ]
 
-            for y1, y2, x1, x2 in coords_sspv:
-                patch = clean_rgb[y1:y2, x1:x2, :]
-                if patch.shape[0] == patch_size and patch.shape[1] == patch_size:
-                    samples.append({
-                        "rgb": patch,
-                        "date": folder_name,
-                        "day_num": day_num,
-                        "plot_type": "SSPV",
-                        "source_file": os.path.basename(img_path)
-                    })
+            curr_sspv = [
+                clean_rgb[y1:y2, x1:x2, :] for y1, y2, x1, x2 in coords_sspv
+                if clean_rgb[y1:y2, x1:x2, :].shape[:2] == (patch_size, patch_size)
+            ]
+            curr_ctrl = [
+                clean_rgb[y1:y2, x1:x2, :] for y1, y2, x1, x2 in coords_ctrl
+                if clean_rgb[y1:y2, x1:x2, :].shape[:2] == (patch_size, patch_size)
+            ]
 
-            for y1, y2, x1, x2 in coords_ctrl:
-                patch = clean_rgb[y1:y2, x1:x2, :]
-                if patch.shape[0] == patch_size and patch.shape[1] == patch_size:
-                    samples.append({
-                        "rgb": patch,
-                        "date": folder_name,
-                        "day_num": day_num,
-                        "plot_type": "Control",
-                        "source_file": os.path.basename(img_path)
-                    })
+            # Save to disk cache for near-instant retrieval on subsequent slider movements
+            try:
+                if curr_sspv and curr_ctrl:
+                    np.savez_compressed(
+                        cache_file,
+                        sspv=np.array(curr_sspv, dtype=np.float32),
+                        ctrl=np.array(curr_ctrl, dtype=np.float32)
+                    )
+            except Exception:
+                pass
+
+            return np.array(curr_sspv, dtype=np.float32), np.array(curr_ctrl, dtype=np.float32), os.path.basename(img_path)
+
+        # Parallel multi-core frame decoding and patch extraction
+        max_workers = min(4, os.cpu_count() or 4)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+            batch_results = list(executor.map(_process_one_frame, img_files))
+
+        for sspv_patches, ctrl_patches, fname in batch_results:
+            for p in sspv_patches:
+                samples.append({
+                    "rgb": p,
+                    "date": folder_name,
+                    "day_num": day_num,
+                    "plot_type": "SSPV",
+                    "source_file": fname
+                })
+            for p in ctrl_patches:
+                samples.append({
+                    "rgb": p,
+                    "date": folder_name,
+                    "day_num": day_num,
+                    "plot_type": "Control",
+                    "source_file": fname
+                })
 
     return samples if len(samples) > 0 else generate_realistic_7date_field_dataset()

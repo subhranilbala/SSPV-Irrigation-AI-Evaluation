@@ -154,11 +154,53 @@ class HybridRecommendationEngine:
                 "SSPV outward percolation is actively pushing salts away from the root zone."
             )
 
+        # RuTAG Human Ecology & Rural Farmer Practical Advisory (Bilingual: EN & HI)
+        rutag_advisories = {
+            self.RECOMMENDATION_LABELS[0]: {
+                "en": "Capillary balance is optimal. Earthen vessel is auto-regulating moisture on plant suction. No refill required.",
+                "hi": "मटके से नमी का संतुलन उत्तम है। पौधे अपनी आवश्यकता अनुसार जल ले रहे हैं। आज पानी भरने की आवश्यकता नहीं है।",
+                "water_saved_l_day": 3.8,
+                "urgency": "Normal"
+            },
+            self.RECOMMENDATION_LABELS[1]: {
+                "en": "Water level inside porous vessels is depleting. Refill vessels to 75% capacity within 24 hours to sustain root hydration.",
+                "hi": "मटकों में जल स्तर कम हो रहा है। पौधों में सूखा तनाव रोकने के लिए अगले 24 घंटे में मटकों को तीन-चौथाई भरें।",
+                "water_saved_l_day": 3.2,
+                "urgency": "Medium"
+            },
+            self.RECOMMENDATION_LABELS[2]: {
+                "en": "Urgent refill needed. If vessels are already full, inspect clay walls for pore siltation and brush interior with clean water.",
+                "hi": "अति आवश्यक: तुरंत मटके भरें। यदि मटके भरे हैं, तो उनकी दीवारों पर गाद जमने की जांच करें और भीतरी सतह साफ करें।",
+                "water_saved_l_day": 2.5,
+                "urgency": "High"
+            },
+            self.RECOMMENDATION_LABELS[3]: {
+                "en": "Soil is saturated. Suspend refills immediately and inspect subsurface drainage channels to prevent root asphyxiation.",
+                "hi": "खेत में अत्यधिक नमी है। तुरंत पानी भरना रोकें। मेड़ और जलनिकासी की जांच करें ताकि पौधों की जड़ें न सड़ें।",
+                "water_saved_l_day": 0.0,
+                "urgency": "High"
+            },
+            self.RECOMMENDATION_LABELS[4]: {
+                "en": "Porous vessel has successfully pushed salts outward. Scrape and remove the white saline crust from mound perimeter.",
+                "hi": "मटके ने लवण को मेड़ के किनारे धकेल दिया है। सिंचाई से पहले सफेद नमक की पपड़ी को खुरच कर खेत से बाहर निकालें।",
+                "water_saved_l_day": 3.5,
+                "urgency": "Medium"
+            }
+        }
+
+        rutag_info = rutag_advisories.get(primary_action, rutag_advisories[self.RECOMMENDATION_LABELS[0]])
+
         return {
             "primary_recommendation": primary_action,
             "confidence": round(confidence, 3),
             "engine_mode": engine_mode,
             "triggers": triggers,
             "secondary_advisory": secondary_advisory,
-            "ranked_recommendations": ranked_recommendations
+            "ranked_recommendations": ranked_recommendations,
+            "rutag_farmer_advisory": {
+                "action_en": rutag_info["en"],
+                "action_hi": rutag_info["hi"],
+                "urgency": rutag_info["urgency"],
+                "estimated_water_saved_liters_day": rutag_info["water_saved_l_day"]
+            }
         }

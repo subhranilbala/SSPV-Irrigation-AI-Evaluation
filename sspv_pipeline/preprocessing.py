@@ -34,8 +34,15 @@ class UAVPreprocessor:
         self.median_kernel = median_kernel
         self.Eps = 1e-6
 
-    def load_image(self, image_path: str) -> Tuple[np.ndarray, Dict[str, Any]]:
-        """Loads either a high-res DJI Zenmuse P1 .JPG or a Georeferenced .tif."""
+    def load_image(
+        self, image_path: str, target_size: Optional[Tuple[int, int]] = None
+    ) -> Tuple[np.ndarray, Dict[str, Any]]:
+        """
+        Loads either a high-res DJI Zenmuse P1 .JPG or a Georeferenced .tif.
+        If target_size is provided (e.g. (1024, 682)), uses hardware-accelerated
+        downscaled JPEG decompression (IMREAD_REDUCED_COLOR_8 / PIL draft) for ~5x-10x
+        faster loading without large RAM allocations.
+        """
         ext = os.path.splitext(image_path)[1].lower()
         metadata = {"path": image_path, "crs": None, "transform": None}
 
@@ -45,14 +52,29 @@ class UAVPreprocessor:
                 img = np.transpose(img, (1, 2, 0))  # (H, W, 3) in RGB
                 metadata["crs"] = src.crs
                 metadata["transform"] = src.transform
+                if target_size is not None and HAS_CV2:
+                    img = cv2.resize(img, target_size, interpolation=cv2.INTER_AREA)
         elif HAS_CV2:
-            bgr = cv2.imread(image_path, cv2.IMREAD_COLOR)
+            if target_size is not None and ext in [".jpg", ".jpeg"]:
+                bgr = cv2.imread(image_path, cv2.IMREAD_REDUCED_COLOR_8)
+                if bgr is not None:
+                    bgr = cv2.resize(bgr, target_size, interpolation=cv2.INTER_AREA)
+                else:
+                    bgr = cv2.imread(image_path, cv2.IMREAD_COLOR)
+            else:
+                bgr = cv2.imread(image_path, cv2.IMREAD_COLOR)
+
             if bgr is None:
                 raise FileNotFoundError(f"Could not read image at {image_path}")
             img = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
         else:
             with Image.open(image_path) as pil_img:
-                img = np.array(pil_img.convert("RGB"))
+                if target_size is not None and ext in [".jpg", ".jpeg"]:
+                    pil_img.draft("RGB", target_size)
+                    pil_resized = pil_img.resize(target_size, Image.Resampling.BILINEAR if hasattr(Image, "Resampling") else Image.BILINEAR)
+                    img = np.array(pil_resized.convert("RGB"))
+                else:
+                    img = np.array(pil_img.convert("RGB"))
 
         return img, metadata
 

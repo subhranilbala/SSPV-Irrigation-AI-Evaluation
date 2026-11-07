@@ -49,6 +49,16 @@ MOISTURE_CLASSES = ["Dry", "Optimal", "Wet"]                   # Head 2
 YIELD_CLASSES    = ["Low", "Medium", "High"]                   # Head 3
 ```
 
+### 2.4 Regional Agro-Ecological Profiles (`REGIONAL_PROFILES`)
+Configures region-specific soil baseline reflectances and climate parameters:
+- **`jodhpur_thar`:** Western Rajasthan / Jodhpur (Kaylana-Aravalli Arid Zone), Aridisol sandy loam, baseline RGB `(0.58, 0.48, 0.38)`, $\text{ET}_0 = 7.2\text{ mm/day}$.
+- **`nagaur_semiarid`:** Nagaur Agricultural Research Station, sandy clay loam with caliche.
+- **`south_india_laterite`:** Southern India red ferruginous laterite.
+- **`indo_gangetic`:** Deep fertile alluvium.
+
+### 2.5 RuTAG Metadata (`RUTAG_METADATA`)
+Formally attributes the engineering modernization to **RuTAG (Rural Technology Action Group), IIT Delhi** and records foundational human-ecology principles (capillary steady-state percolation, evaporative cooling in the rhizosphere, root-zone desalination).
+
 ---
 
 ## 3. Function Details: `get_device()`

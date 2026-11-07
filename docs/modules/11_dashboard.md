@@ -22,13 +22,16 @@ streamlit run main.py
 ### 2.1 Sidebar Controls
 - **Data Input Configuration:**
   - Local path to the `Crops Data` directory (auto-detects `~/Downloads/Crops Data` if present).
-  - Maximum DJI frames per date slider (0 = all frames).
+  - Maximum DJI frames per date slider (default **`5`** for instant 5s startup; 15–30 for deeper flight sampling, 0 = all frames).
   - Single image drag-and-drop file uploader (`.JPG` / `.TIF`).
+- **Agro-Ecological Region & Soil Selector:**
+  - Dropdown choosing regional presets (`jodhpur_thar` Western Rajasthan Aridisol, `nagaur_semiarid`, `south_india_laterite`, `indo_gangetic`).
 - **Model Controls:**
   - Multi-Task CNN Backbone selector (`ResNet18` vs. `EfficientNet-B0`).
   - Training Epochs slider (1–25).
   - ImageNet pretraining toggle.
   - Grad-CAM target head dropdown (`stress_logits`, `moisture_logits`, `yield_logits`).
+  - **"⚡ Force Re-train Models"** button for on-demand training without UI freezes.
 - **Patch Inspector Slider:** Step through and visually inspect any individual dataset patch.
 
 ---
@@ -56,13 +59,13 @@ Displays four synchronized spatial maps for any selected patch or live uploaded 
 ---
 
 ### 2.4 Multi-Date Temporal Growth & Statistical Comparison Charts
-Rendered across two responsive two-column figures:
+Rendered across two responsive two-column figures with automatic canvas memory cleanup (`plt.close`):
 
 #### Figure 1:
 - **Left:** Temporal NGRDI growth trend line plot (SSPV vs. Control with circular markers and confidence bands across elapsed survey days).
 - **Right:** Crop stress pixel proportion boxplot across irrigation systems for ANOVA comparison.
 
-#### Figure 2 (Added Feature):
+#### Figure 2:
 - **Left:** Temporal ExG stability line plot (SSPV vs. Control with square markers) confirming stable demand-driven capillary delivery.
 - **Right:** Temporal VARI distribution line plot (SSPV vs. Control with diamond markers) demonstrating resistance to seasonal atmospheric variations.
 
@@ -71,7 +74,17 @@ Rendered across two responsive two-column figures:
 ### 2.5 Actionable Recommendations & Artifact Download Buttons
 1. **Interactive Table:** Filterable, searchable table displaying date, plot type, spectral indices, predicted stress/moisture/yield states, primary recommendation, confidence score, and top-2 ranked actions.
 2. **Download Button 1:** One-click CSV export of the complete 7-date metrics table (`sspv_7date_metrics.csv`).
-3. **Download Button 2:** One-click download of the complete formal thesis evaluation chapter report (`MTP_Thesis_Evaluation_Chapter_Report.txt`).
+3. **Download Button 2:** One-click download of the complete formal thesis evaluation chapter report PDF (`MTP_Thesis_Evaluation_Chapter_Report.pdf`) generated with ReportLab.
+4. **Download Button 3:** One-click download of the thesis chapter text draft (`MTP_Thesis_Evaluation_Chapter_Report.txt`).
+
+---
+
+### 2.6 RuTAG Human Ecology & Indigenous Hydrology Audit (Section 4)
+Dedicated evaluation panel demonstrating:
+- **Capillary Stability Ratio:** Quantifies steady unpressurized matric buffer (Gangotri percolation principle).
+- **Root-Zone Saline Protection:** Validates that porous pots displace salts outward to perimeter furrows (Parashurama soil reclamation).
+- **Estimated Groundwater Saved:** Computes percentage and daily volumetric water savings vs. flood/furrow irrigation (~38.5%).
+- **Bilingual Smallholder Field Advisory:** Real-time actionable field checklist in English and Hindi (Devanagari) for the inspected plot.
 
 ---
 

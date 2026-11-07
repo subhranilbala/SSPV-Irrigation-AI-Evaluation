@@ -79,6 +79,8 @@ $$
 ### Core Methods
 - `compute_indices(rgb: np.ndarray) -> Dict[str, np.ndarray]`: Takes an $(H, W, 3)$ float32 array in $[0, 1]$ and returns a dictionary of the 8 individual 2D index maps.
 - `build_11ch_tensor(rgb: np.ndarray) -> Tuple[np.ndarray, Dict[str, np.ndarray]]`: Stacks the channels into an $(11, H, W)$ NumPy array and returns both the tensor and the dictionary.
+- `compute_canopy_thermal_buffering_proxy(indices: Dict[str, np.ndarray], seg_mask: np.ndarray) -> float`: Quantifies canopy heat mitigation (*"cooling down the structure"*) by assessing resistance to carotenoid/chlorophyll divergence (NPCI vs. VARI) under heat.
+- `compute_perimeter_salt_leaching_index(seg_mask: np.ndarray, patch_center: Tuple[int, int] = None) -> Dict[str, Any]`: Computes radial displacement of white salt crusts away from the central root zone to the mound perimeter (*"Parashurama soil reclamation"*).
 
 ---
 

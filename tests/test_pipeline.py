@@ -467,6 +467,16 @@ class TestSSPVPipelineComprehensive(unittest.TestCase):
 
             report_text = orch.generate_thesis_pdf_report_content(df_metrics, stats)
             self.assertIn("INDIAN INSTITUTE OF TECHNOLOGY JODHPUR", report_text)
+
+            # Test PDF generation in both ReportLab mode and minimal fallback mode
+            pdf_bytes = orch.generate_thesis_pdf_report_bytes(df_metrics, stats)
+            self.assertGreater(len(pdf_bytes), 1000)
+            self.assertTrue(pdf_bytes.startswith(b"%PDF"))
+
+            with patch("sspv_pipeline.orchestrator.HAS_REPORTLAB", False):
+                pdf_fallback = orch.generate_thesis_pdf_report_bytes(df_metrics, stats)
+                self.assertGreater(len(pdf_fallback), 1000)
+                self.assertTrue(pdf_fallback.startswith(b"%PDF"))
         finally:
             shutil.rmtree(temp_dir, ignore_errors=True)
 
@@ -534,6 +544,48 @@ class TestSSPVPipelineComprehensive(unittest.TestCase):
             with patch("sspv_pipeline.dashboard.HAS_CV2", False):
                 with patch("sspv_pipeline.dashboard.init_and_train_pipeline", mock_init_train):
                     run_streamlit_dashboard()
+
+    # ==========================================================================
+    # 12. RUTAG & REGIONAL AGRO-ECOLOGICAL TESTS
+    # ==========================================================================
+    def test_rutag_regional_configs(self):
+        """Verifies regional agro-ecological presets and RuTAG metadata."""
+        from sspv_pipeline.config import REGIONAL_PROFILES, RUTAG_METADATA, DEFAULT_REGION_KEY
+        self.assertIn("jodhpur_thar", REGIONAL_PROFILES)
+        self.assertIn("nagaur_semiarid", REGIONAL_PROFILES)
+        self.assertIn("baseline_soil_rgb", REGIONAL_PROFILES[DEFAULT_REGION_KEY])
+        self.assertIn("Rural Technology Action Group", RUTAG_METADATA["organization"])
+
+    def test_rutag_biophysical_indices(self):
+        """Tests Canopy Thermal Buffering Proxy & Perimeter Salt Leaching Index."""
+        rgb = np.full((32, 32, 3), 0.5, dtype=np.float32)
+        _, indices = self.extractor.build_11ch_tensor(rgb)
+        seg_mask = np.zeros((32, 32), dtype=np.int64)
+        seg_mask[10:20, 10:20] = 1  # Healthy crop
+        seg_mask[0:5, 0:5] = 3       # Perimeter salt
+
+        buffering = self.extractor.compute_canopy_thermal_buffering_proxy(indices, seg_mask)
+        self.assertIsInstance(buffering, float)
+        self.assertGreaterEqual(buffering, 0.0)
+
+        salt_metrics = self.extractor.compute_perimeter_salt_leaching_index(seg_mask)
+        self.assertIn("salt_ratio", salt_metrics)
+        self.assertIn("root_zone_protected", salt_metrics)
+
+    def test_rutag_farmer_advisories(self):
+        """Tests RuTAG bilingual rural advisory output and water conservation."""
+        probs = np.array([0.7, 0.2, 0.1], dtype=np.float32)
+        rec = self.rec_engine.recommend(
+            ngrdi=0.15, exg=0.20, vari=0.10, tgi=0.05, exb=-0.05,
+            salt_ratio=0.08,
+            stress_probs=probs, moisture_probs=probs, yield_probs=probs
+        )
+        self.assertIn("rutag_farmer_advisory", rec)
+        advisory = rec["rutag_farmer_advisory"]
+        self.assertIn("action_en", advisory)
+        self.assertIn("action_hi", advisory)
+        self.assertGreater(advisory["estimated_water_saved_liters_day"], 0.0)
+
 
 
 if __name__ == "__main__":

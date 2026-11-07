@@ -39,7 +39,11 @@ class VegetationIndexExtractor:
         sum_rgb = R + G + B + self.eps
         sum_gr = G + R + self.eps
         sum_br = B + R + self.eps
-        sum_gr2 = (G ** 2) + (R ** 2) + self.eps
+
+        # Optimized: Single-pass direct floating multiplication instead of redundant pow() calls
+        G2 = G * G
+        R2 = R * R
+        sum_gr2 = G2 + R2 + self.eps
 
         ngrdi = (G - R) / sum_gr
         exg = (2.0 * G - B - R) / sum_rgb
@@ -54,7 +58,7 @@ class VegetationIndexExtractor:
         )
         vari = np.clip((G - R) / vari_denom, -2.0, 2.0)
 
-        mgrvi = ((G ** 2) - (R ** 2)) / sum_gr2
+        mgrvi = (G2 - R2) / sum_gr2
         npci = (B - R) / sum_br
         tgi = G - 0.39 * R - 0.61 * B
         exb = 1.4 * B - G
@@ -92,3 +96,66 @@ class VegetationIndexExtractor:
         ]
         tensor_11ch = np.stack(channels, axis=0).astype(np.float32)
         return tensor_11ch, indices
+
+    def compute_canopy_thermal_buffering_proxy(
+        self, indices: Dict[str, np.ndarray], seg_mask: np.ndarray
+    ) -> float:
+        """
+        RuTAG / Indigenous Hydrology Principle: 'Cooling down the structure'.
+        Measures the thermal and chlorotic buffering provided by the SSPV subsurface
+        evaporative cooling in the rhizosphere.
+        Uses the inverse of NPCI (Normalized Pigment Chlorophyll Index) weighted by VARI.
+        Higher value indicates greater canopy cooling & chlorophyll stability under heat.
+        """
+        crop_pixels = (seg_mask == 1) | (seg_mask == 2)
+        if not np.any(crop_pixels):
+            return 0.0
+
+        # In heat-stressed crops, NPCI rises (carotenoid/chlorophyll ratio increases)
+        # while VARI drops. The buffering metric measures resistance to this divergence.
+        npci_crop = indices["NPCI"][crop_pixels]
+        vari_crop = indices["VARI"][crop_pixels]
+
+        # Normalized cooling score in [0, 1]
+        buffering = np.mean(np.clip((vari_crop - npci_crop + 1.0) / 2.0, 0.0, 1.0))
+        return float(buffering)
+
+    def compute_perimeter_salt_leaching_index(
+        self, seg_mask: np.ndarray, patch_center: Tuple[int, int] = None
+    ) -> Dict[str, float]:
+        """
+        Parashurama / Mannarasala Principle: Saline Soil Reclamation.
+        Quantifies the radial displacement of salts away from the rhizosphere to the
+        mound periphery, confirming that the porous vessel is pushing salts outward.
+        """
+        H, W = seg_mask.shape
+        salt_pixels = (seg_mask == 3)
+        salt_ratio = float(np.mean(salt_pixels))
+
+        if not np.any(salt_pixels):
+            return {
+                "salt_ratio": 0.0,
+                "mean_radial_distance_px": 0.0,
+                "normalized_dispersion": 0.0,
+                "root_zone_protected": True
+            }
+
+        cy, cx = patch_center if patch_center is not None else (H // 2, W // 2)
+        ys, xs = np.where(salt_pixels)
+        distances = np.sqrt((ys - cy) ** 2 + (xs - cx) ** 2)
+
+        max_possible_r = np.sqrt((H / 2) ** 2 + (W / 2) ** 2)
+        mean_r = float(np.mean(distances))
+        norm_dispersion = float(mean_r / (max_possible_r + self.eps))
+
+        # If salt is displaced toward the outer perimeter (norm_dispersion > 0.40),
+        # the central root zone is actively protected from salinity toxicity.
+        root_zone_protected = bool(norm_dispersion > 0.40 and salt_ratio > 0.01)
+
+        return {
+            "salt_ratio": salt_ratio,
+            "mean_radial_distance_px": mean_r,
+            "normalized_dispersion": norm_dispersion,
+            "root_zone_protected": root_zone_protected
+        }
+

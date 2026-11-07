@@ -82,6 +82,11 @@ def recommend(
 - `"triggers"`: List of specific numerical conditions that fired.
 - `"secondary_advisory"`: Salt crust management message (if applicable).
 - `"ranked_recommendations"`: List of dicts `[{"rank": 1, "action": ..., "confidence": ...}, ...]` sorted in descending order of confidence.
+- `"rutag_farmer_advisory"`: Grassroots smallholder action dict:
+  - `"action_en"`: Plain-English farmer instruction (e.g. vessel refilling or pot silt scraping).
+  - `"action_hi"`: Native Hindi instruction (e.g. *"मटके में पानी भरें और भीतरी सतह साफ करें"*).
+  - `"urgency"`: Urgency level (`"Normal"`, `"Medium"`, `"High"`).
+  - `"estimated_water_saved_liters_day"`: Groundwater conserved in liters/day compared to surface flooding.
 
 ---
 

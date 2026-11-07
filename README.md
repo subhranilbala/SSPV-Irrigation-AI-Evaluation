@@ -96,7 +96,7 @@ This repository provides an **end-to-end AI-driven evaluation and decision-suppo
 SSPV-Irrigation-AI-Evaluation/
 ├── main.py                             # Unified CLI & Streamlit runner
 ├── requirements.txt                    # Project dependencies
-├── ARCHITECTURE_DIAGRAMS.md             # Complete architecture diagrams (Mermaid & SVG references)
+├── ARCHITECTURE_DIAGRAMS.md            # Complete architecture diagrams (Mermaid & SVG references)
 ├── Architectures/                      # Rendered high-resolution vector architecture SVGs
 │   ├── Complete End-to-End System Architecture.svg
 │   ├── 11-Channel U-Net Field Segmentation.svg
@@ -137,8 +137,10 @@ SSPV-Irrigation-AI-Evaluation/
 │   ├── sspv_7date_metrics.csv
 │   ├── statistical_report.json
 │   ├── thesis_sspv_vs_control_summary.png
-│   └── MTP_Thesis_Evaluation_Chapter_Report.txt
+│   ├── MTP_Thesis_Evaluation_Chapter_Report.pdf # Publication-grade formal thesis chapter PDF
+│   └── MTP_Thesis_Evaluation_Chapter_Report.txt # Ready-to-use chapter text draft
 │
+├── .sspv_cache/                        # Persistent disk cache for instant patch reload (~0.001s)
 └── venv/                               # Python virtual environment
 ```
 
@@ -155,7 +157,9 @@ source venv/bin/activate
 
 Dependencies required:
 ```bash
-pip install torch torchvision numpy scipy pandas matplotlib seaborn scikit-learn pillow streamlit rasterio opencv-python
+pip install -r requirements.txt
+# Or manually:
+pip install torch torchvision numpy scipy pandas matplotlib seaborn scikit-learn pillow streamlit rasterio opencv-python reportlab
 ```
 
 *Note: On Apple Silicon Macs (M1/M2/M3/M4), the pipeline automatically uses the `mps` (Metal Performance Shaders) backend for accelerated deep learning.*
@@ -170,11 +174,12 @@ Launch the graphical user interface:
 streamlit run main.py
 ```
 **Dashboard Features:**
-1. **Interactive Sidebar:** Select Multi-Task CNN backbone (`ResNet18` or `EfficientNet-B0`), set training epochs, choose Grad-CAM target head, or drag-and-drop a raw DJI drone photo (`.JPG`/`.TIF`).
+1. **Interactive Sidebar:** Select Agro-Climatic Zone (Jodhpur Aridisol, Nagaur, etc.), Multi-Task CNN backbone (`ResNet18` or `EfficientNet-B0`), set training epochs, adjust DJI frame sampling (default `5` for instant 5s startup), or drag-and-drop a raw DJI drone photo (`.JPG`/`.TIF`).
 2. **Top KPI Row:** Instant comparison of SSPV vs. Control mean NGRDI, Welch's t-test p-value, Cohen's d effect size, and temporal variance.
 3. **Spatial Diagnostics:** Side-by-side visualization of RGB, NGRDI canopy greenness heatmap, U-Net 4-class segmentation mask, and Grad-CAM spatial attention map.
 4. **Temporal Multi-Date Trends:** Four-panel graphs tracking NGRDI growth, stress pixel proportion boxplot, ExG stability, and VARI consistency across all survey dates.
-5. **Downloadable Thesis Artifacts:** One-click download buttons for the complete 7-date CSV metrics table and formal thesis chapter evaluation text report.
+5. **RuTAG Human Ecology & Hydrology Audit:** Real-time evaluation of capillary moisture stability (Gangotri percolation buffer), root-zone desalination protection, estimated groundwater conservation (~38.5%), and bilingual (English/Hindi) smallholder field advisories.
+6. **Downloadable Thesis Artifacts:** One-click download buttons for the complete 7-date CSV metrics table, formal thesis chapter PDF report (`.pdf`), and plain text report (`.txt`).
 
 ---
 
@@ -212,11 +217,12 @@ python main.py --mode run_all --backbone efficientnet_b0 --pretrained --epochs 5
 3. **7-Date Benchmark Simulator (Fallback):** Generates 42 multi-date patches modeling circular SSPV vessels, wetted capillary zones, expanding canopy halos, and outer perimeter white salt crusts (Slide 7) alongside conventional control plots.
 
 ### 📤 Outputs Produced by the System:
-1. **`sspv_7date_metrics.csv`:** Full tabular metrics per patch (mean NGRDI, ExG, VARI, TGI, ExB, stress pixel ratio, salt patch ratio, predicted stress/moisture/yield classes, top recommendation, and confidence).
-2. **`statistical_report.json`:** Inferential stats (Welch's t-test $t$ and $p$-value, One-Way ANOVA $F$-values across plots and survey dates, Cohen's $d$ effect sizes, and temporal regression slope $Z$-test).
+1. **`sspv_7date_metrics.csv`:** Full tabular metrics per patch (mean NGRDI, ExG, VARI, TGI, ExB, stress pixel ratio, salt patch ratio, predicted stress/moisture/yield classes, top recommendation, confidence, and bilingual RuTAG farmer actions).
+2. **`statistical_report.json`:** Inferential stats (Welch's t-test $t$ and $p$-value, One-Way ANOVA $F$-values across plots and survey dates, Cohen's $d$ effect sizes, temporal regression slope $Z$-test, and RuTAG capillary hydrology validation).
 3. **`unet_11ch_weights.pth` & `multitask_cnn_11ch_weights.pth`:** Serialized PyTorch weights for the 11-channel U-Net and Multi-Task CNN.
 4. **`thesis_sspv_vs_control_summary.png`:** 4-panel publication graphic (200 DPI) displaying NGRDI growth trajectory, stress proportion boxplot, ExG stability, and VARI distribution across all survey dates.
-5. **`MTP_Thesis_Evaluation_Chapter_Report.txt`:** Formatted academic thesis chapter draft ready for direct insertion into LaTeX or Word.
+5. **`MTP_Thesis_Evaluation_Chapter_Report.pdf`:** Formal, publication-grade academic evaluation chapter PDF featuring IIT Jodhpur headers, candidate/supervisor details, statistical tables, RuTAG audit, embedded publication graphics, and formal signature blocks.
+6. **`MTP_Thesis_Evaluation_Chapter_Report.txt`:** Formatted academic thesis chapter draft ready for direct insertion into LaTeX or Word.
 
 ---
 

@@ -251,7 +251,7 @@ is evaluated through a calibrated Decision Tree classifier, outputting a complet
 When the pipeline executes (`python main.py` or `sspv_pipeline.orchestrator`), it exports:
 
 1. `sspv_7date_metrics.csv`: Tabular evaluation metrics per patch across all 7 temporal survey dates.
-2. `statistical_report.json`: Formatted JSON of all t-test stats, ANOVA $F$-values, Cohen's $d$, and regression slope coefficients.
+2. `statistical_report.json`: Formatted JSON of all t-test stats, ANOVA $F$-values, Cohen's $d$, regression slope coefficients, and RuTAG capillary hydrology validation.
 3. `unet_11ch_weights.pth`: PyTorch binary state dictionary of the trained 11-channel U-Net.
 4. `multitask_cnn_11ch_weights.pth`: PyTorch binary state dictionary of the trained Multi-Task CNN.
 5. `thesis_sspv_vs_control_summary.png`: 4-panel high-resolution (200 DPI) publication graphic:
@@ -259,7 +259,8 @@ When the pipeline executes (`python main.py` or `sspv_pipeline.orchestrator`), i
    - Panel (0,1): Crop Stress Pixel Proportion Boxplot (ANOVA)
    - Panel (1,0): Temporal ExG Stability (Testing Slide 16 hypothesis)
    - Panel (1,1): Temporal VARI Distribution Consistency
-6. `MTP_Thesis_Evaluation_Chapter_Report.txt`: Ready-to-use chapter text summarizing all findings in formal academic thesis format.
+6. `MTP_Thesis_Evaluation_Chapter_Report.pdf`: Publication-grade formal academic evaluation chapter PDF formatted with IIT Jodhpur banners, candidate/supervisor details, statistical tables, RuTAG audit, and signature blocks.
+7. `MTP_Thesis_Evaluation_Chapter_Report.txt`: Ready-to-use chapter text summarizing all findings in formal academic thesis format.
 
 ---
 

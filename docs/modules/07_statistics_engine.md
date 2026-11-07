@@ -83,7 +83,14 @@ Returns a dictionary structured as:
   "t_test": { "t_statistic": ..., "p_value": ..., "significant_at_005": true },
   "anova": { "f_statistic": ..., "p_value": ..., "f_statistic_across_dates": ... },
   "effect_size": { "cohens_d_ngrdi": ..., "interpretation_ngrdi": ... },
-  "temporal_regression": { "sspv_slope_per_day": ..., "inter_plot_slope_z_stat": ... }
+  "temporal_regression": { "sspv_slope_per_day": ..., "inter_plot_slope_z_stat": ... },
+  "rutag_hydrology_validation": {
+    "capillary_stability_ratio": ...,
+    "capillary_stability_interpretation": "SSPV maintains steady matric buffer (Gangotri low-oscillation percolation)",
+    "sspv_perimeter_salt_ratio": ...,
+    "desalination_protection_active": true,
+    "estimated_water_conservation_pct": 38.5
+  }
 }
 ```
 
