@@ -25,7 +25,7 @@ streamlit run main.py
   - Maximum DJI frames per date slider (default **`5`** for instant 5s startup; 15–30 for deeper flight sampling, 0 = all frames).
   - Single image drag-and-drop file uploader (`.JPG` / `.TIF`).
 - **Agro-Ecological Region & Soil Selector:**
-  - Dropdown choosing regional presets (`jodhpur_thar` Western Rajasthan Aridisol, `nagaur_semiarid`, `south_india_laterite`, `indo_gangetic`).
+  - Dropdown choosing regional presets (`dehradun_valley` Doon Valley Foothill Zone [Default], `jodhpur_thar` Western Rajasthan Aridisol, `nagaur_semiarid`, `south_india_laterite`, `indo_gangetic`).
 - **Model Controls:**
   - Multi-Task CNN Backbone selector (`ResNet18` vs. `EfficientNet-B0`).
   - Training Epochs slider (1–25).

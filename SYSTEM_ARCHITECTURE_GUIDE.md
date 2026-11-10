@@ -14,10 +14,10 @@
 Agriculture consumes approximately **70% of global freshwater withdrawals**. Conventional surface irrigation (flood/furrow) and conventional drip systems incur substantial evaporation losses and non-uniform wetting patterns in arid environments like Western Rajasthan. Moreover, standard point sensors (soil moisture probes, tensiometers) lack spatial granularity across heterogeneous field plots.
 
 ### 1.2 Subsurface Porous Vessel (SSPV) Irrigation
-Subsurface Porous Vessel (SSPV) irrigation is an engineered modernization of ancient clay pot (*matka* or *olla*) irrigation, developed and deployed through **RuTAG, IIT Delhi** in collaboration with Arpan Seva Sansthan and tested at agricultural research stations (e.g., Nagaur campus):
+Subsurface Porous Vessel (SSPV) irrigation is an engineered modernization of ancient clay pot (*matka* or *olla*) irrigation, developed and deployed through **RuTAG, IIT Delhi** in collaboration with Arpan Seva Sansthan and tested at agricultural research stations (e.g., Nagaur campus and Dehradun Doon Valley field sites):
 1. **Frustum Geometry:** Unlike spherical pots which disturb the soil mound upon extraction, frustum-shaped clay vessels allow non-destructive installation and removal, supporting conservation agriculture.
 2. **Capillary-Driven Demand:** Water discharges into the rhizosphere strictly under matric suction gradients created by root uptake and soil moisture deficits. When surrounding soil is near field capacity, seepage naturally ceases, achieving **30–50% water savings**.
-3. **Saline Soil Reclamation:** As water percolates outward through porous vessel walls, soluble salts are pushed outward down the mound slopes, forming visible white saline crusts on the outer periphery away from delicate root systems.
+3. **Saline Soil Reclamation & Regional Adaptability:** In arid Rajasthan, as water percolates outward through porous vessel walls, soluble salts are pushed outward down mound slopes. In foothill regions like Dehradun, Uttarakhand (where the real multi-date UAV imagery was captured), the system prevents rapid gravitational percolation and slope runoff, moderates root-zone temperatures, and eliminates weed flushes caused by flood irrigation.
 
 ---
 

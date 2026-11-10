@@ -298,6 +298,7 @@ class SSPVPipelineOrchestrator:
                     records.append({
                         "sample_id": idx,
                         "date": sample["date"],
+                        "image_name": sample.get("source_file", f"DJI_frame_{idx:03d}.JPG"),
                         "day_num": sample["day_num"],
                         "plot_type": sample["plot_type"],
                         "mean_ngrdi": mean_ngrdi,
@@ -317,7 +318,7 @@ class SSPVPipelineOrchestrator:
                         "rutag_advisory_en": rec.get("rutag_farmer_advisory", {}).get("action_en", ""),
                         "rutag_advisory_hi": rec.get("rutag_farmer_advisory", {}).get("action_hi", ""),
                         "water_saved_l_day": rec.get("rutag_farmer_advisory", {}).get("estimated_water_saved_liters_day", 0.0),
-                        "ranked_top2": f"1. {rec['ranked_recommendations'][0]['action'][:28]}.. ({rec['ranked_recommendations'][0]['confidence']}) | 2. {rec['ranked_recommendations'][1]['action'][:28]}.. ({rec['ranked_recommendations'][1]['confidence']})"
+                        "ranked_top2": f"1. {rec['ranked_recommendations'][0]['action']} ({rec['ranked_recommendations'][0]['confidence']:.2f}) | 2. {rec['ranked_recommendations'][1]['action']} ({rec['ranked_recommendations'][1]['confidence']:.2f})"
                     })
 
         df = pd.DataFrame(records)

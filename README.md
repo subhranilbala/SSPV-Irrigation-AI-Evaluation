@@ -12,7 +12,7 @@
 
 Subsurface Porous Vessel (SSPV) irrigation is an ancient yet modernised water-conservation technique (refined by RuTAG, IIT Delhi) utilizing buried porous clay vessels on agricultural soil mounds. Water seeps into the soil strictly via capillary suction governed by crop moisture transpiration, reducing evaporation losses by **30–50%** compared to conventional surface irrigation and mitigating soil salinity.
 
-This repository provides an **end-to-end AI-driven evaluation and decision-support pipeline** using drone-borne high-resolution RGB imagery (e.g., DJI Zenmuse P1 at 8192×5460 resolution) to evaluate and compare SSPV irrigation against conventional control plots across multiple temporal dates.
+This repository provides an **end-to-end AI-driven evaluation and decision-support pipeline** using drone-borne high-resolution RGB imagery (e.g., DJI Zenmuse P1 at 8192×5460 resolution captured over experimental agricultural plots in Dehradun, Uttarakhand) to evaluate and compare SSPV irrigation against conventional control plots across multiple temporal dates.
 
 ---
 

@@ -60,6 +60,16 @@ RUTAG_METADATA = {
 
 # Regional soil & agro-climatic presets
 REGIONAL_PROFILES = {
+    "dehradun_valley": {
+        "name": "Dehradun (Doon Valley / Sub-Himalayan Foothill Zone)",
+        "soil_type": "Mollisol / Inceptisol (Mountain Loam & Alluvial Sandy Loam)",
+        "baseline_soil_rgb": (0.42, 0.38, 0.32),  # Rich organic brown-grey loam
+        "evaporation_rate_mm_day": 3.8,
+        "groundwater_salinity_ec_dsm": 0.6,
+        "capillary_wicking_speed": "moderate",
+        "salt_crust_propensity": "low",
+        "primary_crops": ["Basmati Rice", "Wheat", "Mustard", "Pulses", "Orchards / Horticulture"]
+    },
     "jodhpur_thar": {
         "name": "Western Rajasthan / Jodhpur (Kaylana-Aravalli Arid Zone)",
         "soil_type": "Aridisol / Typic Torripsamment (Calcareous Sand / Sandy Loam)",
@@ -102,8 +112,8 @@ REGIONAL_PROFILES = {
     }
 }
 
-# Active default region (calibrated to IIT Jodhpur / Kaylana Lake vicinity)
-DEFAULT_REGION_KEY = "jodhpur_thar"
+# Active default region (calibrated to Dehradun Doon Valley experimental site)
+DEFAULT_REGION_KEY = "dehradun_valley"
 
 
 

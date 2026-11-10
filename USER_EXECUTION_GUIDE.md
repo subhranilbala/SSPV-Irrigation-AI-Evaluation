@@ -149,7 +149,7 @@ orch.save_thesis_artifacts("./outputs", df_metrics, stats, history)
 The pipeline accommodates three flexible input modalities:
 
 ### Input Type A: Multi-Date Drone Folders (DJI Zenmuse P1)
-For real field surveys conducted over the crop growth cycle.
+For real field surveys conducted over the crop growth cycle across experimental plots in **Dehradun, Uttarakhand (Doon Valley / Sub-Himalayan Foothill Zone)**.
 
 #### Expected Directory Layout:
 ```

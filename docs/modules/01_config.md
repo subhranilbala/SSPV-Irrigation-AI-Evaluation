@@ -50,7 +50,8 @@ YIELD_CLASSES    = ["Low", "Medium", "High"]                   # Head 3
 ```
 
 ### 2.4 Regional Agro-Ecological Profiles (`REGIONAL_PROFILES`)
-Configures region-specific soil baseline reflectances and climate parameters:
+Configures region-specific soil baseline reflectances and climate parameters (with `dehradun_valley` active as `DEFAULT_REGION_KEY`):
+- **`dehradun_valley` (Active Default):** Dehradun Doon Valley / Sub-Himalayan Foothill Zone, Mollisol/Inceptisol mountain & alluvial loam, baseline RGB `(0.42, 0.38, 0.32)`, $\text{ET}_0 = 3.8\text{ mm/day}$, low salinity ($0.6\text{ dS/m}$), primary crops: Basmati Rice, Wheat, Mustard, Horticulture.
 - **`jodhpur_thar`:** Western Rajasthan / Jodhpur (Kaylana-Aravalli Arid Zone), Aridisol sandy loam, baseline RGB `(0.58, 0.48, 0.38)`, $\text{ET}_0 = 7.2\text{ mm/day}$.
 - **`nagaur_semiarid`:** Nagaur Agricultural Research Station, sandy clay loam with caliche.
 - **`south_india_laterite`:** Southern India red ferruginous laterite.

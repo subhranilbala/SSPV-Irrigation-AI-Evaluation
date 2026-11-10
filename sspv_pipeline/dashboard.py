@@ -105,6 +105,7 @@ def _build_dynamic_column_config(df):
 
     pretty_labels = {
         "date": "Survey Date",
+        "image_name": "Image Name",
         "plot_type": "Plot Type",
         "mean_ngrdi": "Mean NGRDI",
         "mean_exg": "Mean ExG",
@@ -178,9 +179,11 @@ def run_streamlit_dashboard():
             type=["jpg", "jpeg", "tif", "tiff"]
         )
         st.header("2. Agro-Ecological Region & Soil")
+        default_idx = list(REGIONAL_PROFILES.keys()).index(DEFAULT_REGION_KEY) if DEFAULT_REGION_KEY in REGIONAL_PROFILES else 0
         selected_region = st.selectbox(
             "Agro-Climatic Zone",
             options=list(REGIONAL_PROFILES.keys()),
+            index=default_idx,
             format_func=lambda k: REGIONAL_PROFILES[k]["name"],
             help="Select the geographic origin of the imagery to adjust soil spectral baseline & evaporation models."
         )
@@ -226,22 +229,31 @@ def run_streamlit_dashboard():
     col1.metric(
         "SSPV Mean NGRDI",
         f"{stats_summary['t_test']['sspv_mean_ngrdi']:.4f}",
-        delta=f"+{stats_summary['t_test']['sspv_mean_ngrdi'] - stats_summary['t_test']['control_mean_ngrdi']:.4f} vs Control"
+        delta=f"+{stats_summary['t_test']['sspv_mean_ngrdi'] - stats_summary['t_test']['control_mean_ngrdi']:.4f} vs Control",
+        delta_color="normal"
     )
+    is_sig = stats_summary["t_test"]["significant_at_005"]
     col2.metric(
         "Welch t-test p-value",
         f"{stats_summary['t_test']['p_value']:.4e}",
-        delta="Statistically Significant" if stats_summary["t_test"]["significant_at_005"] else "Not Significant"
+        delta="✓ Statistically Significant (p < 0.05)" if is_sig else "✗ Not Significant (p ≥ 0.05)",
+        delta_color="normal" if is_sig else "inverse"
     )
+    d_val = stats_summary['effect_size']['cohens_d_ngrdi']
     col3.metric(
         "Cohen's d (NGRDI)",
-        f"{stats_summary['effect_size']['cohens_d_ngrdi']:.2f}",
-        delta=stats_summary["effect_size"]["interpretation_ngrdi"]
+        f"{d_val:.2f}",
+        delta=stats_summary["effect_size"]["interpretation_ngrdi"],
+        delta_color="normal" if d_val > 0 else "inverse"
     )
+    sspv_std = stats_summary['temporal_regression']['sspv_exg_temporal_std']
+    ctrl_std = stats_summary['temporal_regression']['control_exg_temporal_std']
+    std_diff = ctrl_std - sspv_std
     col4.metric(
-        "ExG Temporal Variance (SSPV vs Ctrl)",
-        f"{stats_summary['temporal_regression']['sspv_exg_temporal_std']:.4f}",
-        delta=f"Ctrl: {stats_summary['temporal_regression']['control_exg_temporal_std']:.4f}"
+        "ExG Volatility (Temporal Std)",
+        f"{sspv_std:.4f}",
+        delta=f"-{abs(std_diff):.4f} Lower Volatility vs Ctrl" if std_diff >= 0 else f"+{abs(std_diff):.4f} Higher Volatility vs Ctrl",
+        delta_color="normal" if std_diff >= 0 else "inverse"
     )
 
     st.divider()
@@ -334,7 +346,7 @@ def run_streamlit_dashboard():
     st.divider()
 
     # Multi-Date Temporal Comparison Charts
-    st.subheader("2. Multi-Date Temporal Growth Trend & SSPV vs. Control Statistical Comparison")
+    st.subheader("2a. Multi-Date Temporal Growth Trend & SSPV vs. Control Statistical Comparison")
     fig2, (ax_left, ax_right) = plt.subplots(1, 2, figsize=(14, 4.5))
 
     sns.lineplot(
@@ -417,7 +429,7 @@ def run_streamlit_dashboard():
     with col_dl2:
         pdf_bytes = orch.generate_thesis_pdf_report_bytes(df_metrics, stats_summary)
         st.download_button(
-            label="🎓 Download Thesis Chapter Report (PDF)",
+            label="🎓 Download MTP Evaluation Report (PDF)",
             data=pdf_bytes,
             file_name="MTP_Thesis_Evaluation_Chapter_Report.pdf",
             mime="application/pdf",
@@ -426,7 +438,7 @@ def run_streamlit_dashboard():
     with col_dl3:
         thesis_pdf_text = orch.generate_thesis_pdf_report_content(df_metrics, stats_summary)
         st.download_button(
-            label="📄 Download Chapter Report (.txt)",
+            label="📄 Download Evaluation Summary (.txt)",
             data=thesis_pdf_text.encode("utf-8"),
             file_name="MTP_Thesis_Evaluation_Chapter_Report.txt",
             mime="text/plain",
@@ -435,6 +447,7 @@ def run_streamlit_dashboard():
 
     pretty_col_names = {
         "date": "Survey Date",
+        "image_name": "Image Name",
         "plot_type": "Plot Type",
         "mean_ngrdi": "Mean NGRDI",
         "mean_exg": "Mean ExG",
@@ -546,13 +559,55 @@ def run_streamlit_dashboard():
         delta="vs. Conventional Flood/Furrow"
     )
 
-    # Inspect current patch RuTAG farmer advisory
+    # Inspect current patch RuTAG farmer advisory (Equal-dimension bilingual cards with Voice Playback)
     if sample_idx < len(df_metrics):
         cur_row = df_metrics.iloc[sample_idx]
-        st.markdown("#### 📢 Smallholder Field Advisory (Bilingual)")
-        adv_col1, adv_col2 = st.columns(2)
-        with adv_col1:
-            st.info(f"**English:** {cur_row.get('rutag_advisory_en', cur_row['recommendation'])}")
-        with adv_col2:
-            st.success(f"**हिंदी (Hindi):** {cur_row.get('rutag_advisory_hi', 'खेत की नियमित देखभाल जारी रखें।')}")
+        st.markdown("#### 📢 Smallholder Field Advisory (Bilingual Voice & Text)")
+        
+        en_text = cur_row.get('rutag_advisory_en', cur_row['recommendation'])
+        hi_text = cur_row.get('rutag_advisory_hi', 'खेत की नियमित देखभाल जारी रखें।')
+        water_saved = float(cur_row.get('water_saved_l_day', 0.0))
+        en_clean = str(en_text).replace("'", "\\'").replace('"', '&quot;')
+        hi_clean = str(hi_text).replace("'", "\\'").replace('"', '&quot;')
+
+        card_html = f"""
+        <div style="display: flex; gap: 16px; margin-top: 6px; width: 100%;">
+            <div style="flex: 1; min-height: 145px; background-color: #f0f7ff; border: 1.5px solid #b8daff; border-radius: 8px; padding: 14px 18px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                <div>
+                    <div style="font-weight: 700; color: #004085; font-size: 14px; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
+                        <span>📢 English Advisory</span>
+                        <span style="font-size: 11px; background: #cce5ff; color: #004085; padding: 2px 7px; border-radius: 4px;">Agronomist</span>
+                    </div>
+                    <div style="color: #0b2e4f; font-size: 13.5px; line-height: 1.45;">{en_text}</div>
+                </div>
+                <div style="margin-top: 12px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #d6e9f8; pt: 8px;">
+                    <span style="font-size: 11.5px; color: #004085; font-weight: 600;">💧 Water Saved: ~{water_saved:.1f} L/day</span>
+                    <button onclick="window.speechSynthesis.cancel(); let u = new SpeechSynthesisUtterance('{en_clean}'); u.lang = 'en-IN'; window.speechSynthesis.speak(u);" 
+                            style="background-color: #004085; color: white; border: none; border-radius: 5px; padding: 5px 12px; font-size: 12px; cursor: pointer; font-weight: 600; transition: 0.2s;">
+                        🔊 Listen (English)
+                    </button>
+                </div>
+            </div>
+            <div style="flex: 1; min-height: 145px; background-color: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 8px; padding: 14px 18px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                <div>
+                    <div style="font-weight: 700; color: #155724; font-size: 14px; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
+                        <span>🌾 ग्रामीण किसान सलाह (हिंदी)</span>
+                        <span style="font-size: 11px; background: #d1fae5; color: #065f46; padding: 2px 7px; border-radius: 4px;">किसान मित्र</span>
+                    </div>
+                    <div style="color: #14532d; font-size: 13.8px; line-height: 1.5;">{hi_text}</div>
+                </div>
+                <div style="margin-top: 12px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #d1fae5; pt: 8px;">
+                    <span style="font-size: 11.5px; color: #155724; font-weight: 600;">💧 जल बचत: ~{water_saved:.1f} ली/दिन</span>
+                    <button onclick="window.speechSynthesis.cancel(); let u = new SpeechSynthesisUtterance('{hi_clean}'); u.lang = 'hi-IN'; window.speechSynthesis.speak(u);" 
+                            style="background-color: #155724; color: white; border: none; border-radius: 5px; padding: 5px 12px; font-size: 12px; cursor: pointer; font-weight: 600; transition: 0.2s;">
+                        🔊 सुनें (Audio Playback)
+                    </button>
+                </div>
+            </div>
+        </div>
+        """
+        if hasattr(st, "html"):
+            st.html(card_html)
+        else:
+            st.markdown(card_html, unsafe_allow_html=True)
 

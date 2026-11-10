@@ -155,7 +155,8 @@ def generate_realistic_7date_field_dataset(
                 "rgb": rgb,
                 "date": date_str,
                 "day_num": day_num,
-                "plot_type": plot_type
+                "plot_type": plot_type,
+                "source_file": f"SIM_{date_str}_{plot_type}_p{p_idx+1}.png"
             })
 
     return samples
