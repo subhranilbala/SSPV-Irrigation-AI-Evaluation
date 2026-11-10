@@ -63,17 +63,14 @@ def init_and_train_pipeline(
 
 def _get_stretch_kwarg(target_func):
     """
-    Returns {'width': 'stretch'} for modern Streamlit (>=1.40 / 1.66+) to prevent deprecation warnings,
-    or {'use_container_width': True} for older Streamlit versions (<1.40) to prevent TypeError.
+    Returns {'width': 'stretch'} for modern Streamlit (>=1.40+) to eliminate deprecation warnings,
+    or falls back to {'use_container_width': True} for legacy Streamlit versions (<1.40).
     """
     try:
         import inspect
         params = inspect.signature(target_func).parameters
         if "width" in params:
-            annotation = str(params["width"].annotation)
-            default = str(params["width"].default)
-            if "Width" in annotation or "stretch" in default or "str" in annotation:
-                return {"width": "stretch"}
+            return {"width": "stretch"}
         if "use_container_width" in params:
             return {"use_container_width": True}
     except Exception:
@@ -81,77 +78,69 @@ def _get_stretch_kwarg(target_func):
     return {}
 
 
-def _center_header_label(label: str, target_width: int, char_px: float = 7.5, space_px: float = 4.2) -> str:
+def _generate_speech_wav(text: str, lang: str = "en") -> bytes:
     """
-    Glide Data Grid on HTML5 Canvas renders column headers left-aligned by default.
-    By prefixing non-breaking spaces (\u00A0) proportional to the remaining cell width,
-    the header text is positioned cleanly in the horizontal center of the header cell.
+    Synthesizes spoken audio using macOS built-in speech engine ('say' + 'afconvert').
+    Returns standard 16-bit PCM WAV bytes playable directly in browser HTML5 audio.
     """
-    text_px = len(label) * char_px
-    rem_px = max(0, target_width - text_px - 36)
-    pad_spaces = max(0, int((rem_px / 2.0) / space_px))
-    return ("\u00A0" * pad_spaces) + label
+    import subprocess
+    import tempfile
 
-
-def _build_dynamic_column_config(df):
-    """
-    Dynamically sizes table columns based on the exact maximum character length of data and headers.
-    Computes exact pixel widths so text is never truncated or clipped regardless of length.
-    Ensures all column values and headers are centered vertically and horizontally.
-    """
-    import streamlit as st
-    import inspect
-    has_align = "alignment" in inspect.signature(st.column_config.Column).parameters
-
-    pretty_labels = {
-        "date": "Survey Date",
-        "image_name": "Image Name",
-        "plot_type": "Plot Type",
-        "mean_ngrdi": "Mean NGRDI",
-        "mean_exg": "Mean ExG",
-        "mean_vari": "Mean VARI",
-        "salt_patch_ratio": "Salt Ratio",
-        "pred_stress": "Crop Stress",
-        "pred_moisture": "Moisture State",
-        "pred_yield": "Yield Level",
-        "recommendation": "Decision Recommendation",
-        "rec_confidence": "Confidence",
-        "rec_mode": "Decision Mode",
-        "ranked_top2": "Ranked Decision Hierarchy (Top-2 Actions)",
-    }
-
-    cfg = {}
-    for col in df.columns:
-        label = pretty_labels.get(col, col.replace("_", " ").title())
-        max_char_len = max(df[col].astype(str).map(len).max(), len(label))
-        # Compute exact pixel width: ~9.8px per character + cell margins + sort arrows
-        col_width = max(130, int(max_char_len * 9.8) + 50)
-        padded_label = _center_header_label(label, col_width)
-
-        kw = {"label": padded_label, "width": col_width}
-        if has_align:
-            kw["alignment"] = "center"
-
-        if pd.api.types.is_numeric_dtype(df[col]):
-            kw["format"] = "%.4f"
-            col_obj = st.column_config.NumberColumn(**kw)
-        else:
-            col_obj = st.column_config.TextColumn(**kw)
-
-        col_obj["alignment"] = "center"
-        cfg[col] = col_obj
-    return cfg
+    voice = "Lekha" if lang == "hi" else "Rishi"
+    try:
+        with tempfile.NamedTemporaryFile(suffix=".aiff", delete=False) as f_aiff:
+            aiff_path = f_aiff.name
+        wav_path = aiff_path.replace(".aiff", ".wav")
+        res = subprocess.run(
+            ["/usr/bin/say", "-v", voice, text, "-o", aiff_path],
+            capture_output=True, timeout=5
+        )
+        if res.returncode != 0:
+            subprocess.run(["/usr/bin/say", text, "-o", aiff_path], capture_output=True, timeout=5)
+        subprocess.run(
+            ["/usr/bin/afconvert", "-f", "WAVE", "-d", "LEI16", aiff_path, wav_path],
+            capture_output=True, timeout=5
+        )
+        if os.path.exists(wav_path):
+            with open(wav_path, "rb") as f:
+                data = f.read()
+            if os.path.exists(aiff_path):
+                os.remove(aiff_path)
+            if os.path.exists(wav_path):
+                os.remove(wav_path)
+            return data
+    except Exception:
+        pass
+    return b""
 
 
 def run_streamlit_dashboard():
     import streamlit as st
 
     st.set_page_config(
-        page_title="SSPV Irrigation AI Evaluation Dashboard - IIT Jodhpur",
-        layout="wide"
+        page_title="AI Based Evaluation of Empirical Subsurface Porous Vessel Irrigation System Performance Using Images",
+        layout="wide",
+        initial_sidebar_state="expanded"
     )
 
-    st.title("AI-Based Evaluation of Subsurface Porous Vessel (SSPV) Irrigation Performance")
+    # Stretch left vertical ribbon (sidebar) to max comfortable width on every run
+    st.markdown(
+        """
+        <style>
+            section[data-testid="stSidebar"] {
+                min-width: 430px !important;
+                width: 450px !important;
+            }
+            section[data-testid="stSidebar"] > div:first-child {
+                min-width: 430px !important;
+                width: 450px !important;
+            }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.title("AI Based Evaluation of Empirical Subsurface Porous Vessel Irrigation System Performance Using Images")
     st.markdown(
         "**M.Tech Thesis Project (MTP)** | **Subhranil Bala (M25AI2038)** | "
         "**Supervisor:** Dr. Anand Krishnan Plappally | **IIT Jodhpur**"
@@ -163,22 +152,23 @@ def run_streamlit_dashboard():
         default_crops_path = ""
 
     with st.sidebar:
-        st.header("1. Data Input Configuration")
+        st.header("📂 Flight Data Input")
         data_dir = st.text_input(
             "Local Path to 'Crops Data' Folder",
             value=default_crops_path,
             help="Paste the full path to your 'Crops Data' folder containing 02-12-2024/images, 12-11-2024/images, etc."
         )
         max_imgs_ui = st.slider(
-            "Max DJI Frames per Date Folder (0 = ALL)",
+            "Max Image Frames per Date Folder (0 = ALL)",
             min_value=0, max_value=200, value=5, step=5,
-            help="Set to 5 for instant startup (~5s SIFT alignment), 15-30 for deeper flight coverage, or 0 to load all 1,924 images."
+            help="Set to 5 for instant startup (~5s SIFT alignment), 15-30 for deeper flight coverage, or 0 to load all images."
         )
         uploaded_file = st.file_uploader(
-            "Or Upload a Single DJI Drone Image (.JPG / .TIF)",
+            "Or Upload a Single Aerial / Drone Image (.JPG / .TIF)",
             type=["jpg", "jpeg", "tif", "tiff"]
         )
-        st.header("2. Agro-Ecological Region & Soil")
+
+        st.header("🌍 Agro-Climatic Zone & Soil")
         default_idx = list(REGIONAL_PROFILES.keys()).index(DEFAULT_REGION_KEY) if DEFAULT_REGION_KEY in REGIONAL_PROFILES else 0
         selected_region = st.selectbox(
             "Agro-Climatic Zone",
@@ -191,16 +181,22 @@ def run_streamlit_dashboard():
         st.caption(f"**Soil:** {reg_meta['soil_type']}")
         st.caption(f"**Peak ET₀:** {reg_meta['evaporation_rate_mm_day']} mm/day | **Salinity EC:** {reg_meta['groundwater_salinity_ec_dsm']} dS/m")
 
-        st.header("3. Model & Inspection Controls")
+        st.header("🧠 Model & Neural Controls")
         backbone_choice = st.selectbox(
             "Multi-Task CNN Backbone",
-            ["resnet18", "efficientnet_b0"]
+            ["resnet18", "efficientnet_b0"],
+            format_func=lambda b: "ResNet-18 (Residual Learning)" if b == "resnet18" else "EfficientNet-B0 (Compound Scaling)"
         )
         epochs = st.slider("Training Epochs", min_value=1, max_value=25, value=4)
         use_pretrained = st.checkbox("Use ImageNet Pretrained Backbone", value=False)
         gradcam_task = st.selectbox(
             "Grad-CAM Target Head",
-            ["stress_logits", "moisture_logits", "yield_logits"]
+            ["stress_logits", "moisture_logits", "yield_logits"],
+            format_func=lambda h: {
+                "stress_logits": "Crop Stress Attention (Head)",
+                "moisture_logits": "Soil Moisture Attention (Head)",
+                "yield_logits": "Yield Prediction Attention (Head)"
+            }.get(h, h)
         )
         force_retrain = st.button("⚡ Force Re-train Models", help="Re-runs full model training from scratch and updates saved weights.")
 
@@ -210,18 +206,64 @@ def run_streamlit_dashboard():
     )
 
     with st.sidebar:
-        # Show status badge confirming whether real DJI images or synthetic fallback loaded
+        # Show status badge confirming whether real aerial images or synthetic fallback loaded
         is_real = any("source_file" in s for s in orch.dataset.samples)
         if is_real:
-            st.success(f"Loaded {len(orch.dataset)} patches from real DJI images!")
+            st.success(f"✓ Loaded {len(orch.dataset)} patches from real aerial survey imagery!")
         else:
-            st.info("Running on 7-Date Synthetic Benchmark (enter valid 'Crops Data' path above for real DJI images).")
+            st.info("ℹ️ Running on Synthetic Benchmark.")
+
+        st.header("🎯 Target Inspection Selector")
+
+        # Dynamic Date and Image dropdowns for instant frame inspection
+        available_dates = []
+        for s in orch.dataset.samples:
+            d = s.get("date", "Unknown")
+            if d not in available_dates:
+                available_dates.append(d)
+        if not available_dates:
+            available_dates = ["Default"]
+
+        selected_date = st.selectbox(
+            "1. Select Survey Flight Date",
+            options=available_dates,
+            index=0,
+            help="Choose the flight survey date you want to view in Section 1."
+        )
+
+        matching_indices = [
+            i for i, s in enumerate(orch.dataset.samples)
+            if s.get("date") == selected_date
+        ]
+        if not matching_indices:
+            matching_indices = list(range(len(orch.dataset.samples)))
+
+        def _format_target_option(idx):
+            sample_obj = orch.dataset.samples[idx]
+            fname = sample_obj.get("source_file", sample_obj.get("image_name", f"Frame_{idx:03d}"))
+            ptype = str(sample_obj.get("plot_type", "SSPV")).upper()
+            return f"{fname} [{ptype}]"
+
+        selected_sample_idx = st.selectbox(
+            "2. Select Image Frame & Plot",
+            options=matching_indices,
+            format_func=_format_target_option,
+            help="Select the specific aerial image and plot (SSPV vs. Control) to inspect in Section 1 & Section 5."
+        )
 
         sample_idx = st.slider(
-            "Inspect Dataset Patch ID",
+            "Or Scrub by Patch ID Slider (0 to N)",
             min_value=0,
             max_value=max(0, len(orch.dataset) - 1),
-            value=min(10, max(0, len(orch.dataset) - 1))
+            value=selected_sample_idx,
+            help="Quickly scrub through all loaded patches sequentially."
+        )
+
+        curr_sample = orch.dataset[min(sample_idx, len(orch.dataset) - 1)]
+        st.caption(
+            f"📍 **Active Target:** Date `{curr_sample.get('date', 'N/A')}` | "
+            f"Image `{curr_sample.get('source_file', curr_sample.get('image_name', 'Aerial Frame'))}` | "
+            f"Plot **{str(curr_sample.get('plot_type', 'SSPV')).upper()}**"
         )
 
     # Top KPI Metrics Row
@@ -233,9 +275,11 @@ def run_streamlit_dashboard():
         delta_color="normal"
     )
     is_sig = stats_summary["t_test"]["significant_at_005"]
+    p_val = stats_summary['t_test']['p_value']
+    p_display = f"{p_val:.2e}" if p_val < 0.0001 else f"{p_val:.4f}"
     col2.metric(
         "Welch t-test p-value",
-        f"{stats_summary['t_test']['p_value']:.4e}",
+        p_display,
         delta="✓ Statistically Significant (p < 0.05)" if is_sig else "✗ Not Significant (p ≥ 0.05)",
         delta_color="normal" if is_sig else "inverse"
     )
@@ -252,15 +296,15 @@ def run_streamlit_dashboard():
     col4.metric(
         "ExG Volatility (Temporal Std)",
         f"{sspv_std:.4f}",
-        delta=f"-{abs(std_diff):.4f} Lower Volatility vs Ctrl" if std_diff >= 0 else f"+{abs(std_diff):.4f} Higher Volatility vs Ctrl",
+        delta=f"-{abs(std_diff):.4f} Lower Volatility vs Control" if std_diff >= 0 else f"+{abs(std_diff):.4f} Higher Volatility vs Control",
         delta_color="normal" if std_diff >= 0 else "inverse"
     )
 
     st.divider()
 
-    # Live Single-Image Upload Inspection (if user drags and drops a DJI .JPG)
+    # Live Single-Image Upload Inspection (if user drags and drops an aerial .JPG)
     if uploaded_file is not None:
-        st.subheader(f"Live Uploaded DJI Frame Analysis: `{uploaded_file.name}`")
+        st.subheader(f"1. 🛰️ Live Uploaded Aerial Frame Analysis: `{uploaded_file.name}`")
         if HAS_CV2:
             file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
             bgr = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
@@ -272,16 +316,17 @@ def run_streamlit_dashboard():
         rgb = orch.preprocessor.process(rgb_resized)
         tensor_11ch, indices = orch.vi_extractor.build_11ch_tensor(rgb)
         x_tensor = torch.from_numpy(tensor_11ch).unsqueeze(0).to(orch.device)
-        plot_title = f"Uploaded: {uploaded_file.name}"
+        detail_label = f"{uploaded_file.name} (Uploaded Frame)"
     else:
-        st.subheader("1. Spatial Inspection: 11-Channel U-Net Segmentation & Multi-Task Grad-CAM")
+        st.subheader("1. 🛰️ Spatial Inspection: 11-Channel U-Net Segmentation & Multi-Task Grad-CAM")
         sample = orch.dataset[min(sample_idx, len(orch.dataset) - 1)]
         rgb = sample["rgb"]
         x_tensor = sample["tensor_11ch"].unsqueeze(0).to(orch.device)
         indices = sample.get("indices")
         if indices is None:
             _, indices = orch.vi_extractor.build_11ch_tensor(rgb)
-        plot_title = f"{sample['plot_type']} ({sample['date']})"
+        img_name = sample.get("source_file", sample.get("image_name", "Aerial Frame"))
+        detail_label = f"{img_name} ({sample['plot_type']} • {sample['date']})"
 
     with torch.no_grad():
         seg_logits = orch.unet(x_tensor)
@@ -296,12 +341,12 @@ def run_streamlit_dashboard():
     # 1. Preprocessed RGB
     ax0 = fig1.add_subplot(gs[0, 0])
     ax0.imshow(rgb)
-    ax0.set_title(f"Preprocessed RGB\n({plot_title})", fontsize=10, fontweight="bold", pad=6)
+    ax0.set_title("Preprocessed RGB\n(True Color Reflectance)", fontsize=10, fontweight="bold", pad=6)
     ax0.axis("off")
 
     cax0 = fig1.add_subplot(gs[1, 0])
     cax0.axis("off")
-    cax0.text(0.5, 0.4, "True Color Input", ha="center", va="center", fontsize=8, color="#666666")
+    cax0.text(0.5, 0.4, detail_label, ha="center", va="center", fontsize=7.5, color="#1e293b", fontweight="semibold")
 
     # 2. NGRDI Canopy Greenness Heatmap
     ax1 = fig1.add_subplot(gs[0, 1])
@@ -340,33 +385,57 @@ def run_streamlit_dashboard():
     cbar3.ax.tick_params(labelsize=8)
     cbar3.set_label("Activation Intensity", fontsize=8, labelpad=2)
 
-    st.pyplot(fig1)
+    st.pyplot(fig1, **_get_stretch_kwarg(st.pyplot))
     plt.close(fig1)
 
     st.divider()
 
     # Multi-Date Temporal Comparison Charts
-    st.subheader("2a. Multi-Date Temporal Growth Trend & SSPV vs. Control Statistical Comparison")
+    st.subheader("2a. 📈 Multi-Date Temporal Growth Trend & Statistical Comparison")
     fig2, (ax_left, ax_right) = plt.subplots(1, 2, figsize=(14, 4.5))
+
+    # Unified Treatment Colors across ALL plots:
+    # SSPV = #2e7d32 (Forest Green - subsurface water conservation)
+    # Control = #d84315 (Rust Amber - conventional surface flood irrigation)
+    treatment_palette = {
+        "SSPV": "#2e7d32", "Control": "#d84315",
+        "sspv": "#2e7d32", "control": "#d84315"
+    }
+    treatment_labels = {
+        "SSPV": "SSPV (Subsurface)", "Control": "Control (Flood)",
+        "sspv": "SSPV (Subsurface)", "control": "Control (Flood)"
+    }
+    earliest_date = df_metrics["date"].min() if "date" in df_metrics and len(df_metrics) > 0 else "12-11-2024"
 
     sns.lineplot(
         data=df_metrics, x="day_num", y="mean_ngrdi", hue="plot_type",
-        marker="o", linewidth=2.5, ax=ax_left
+        palette=treatment_palette, marker="o", linewidth=2.5, ax=ax_left
     )
-    ax_left.set_title("Temporal NGRDI Growth Trend Across Survey Dates")
-    ax_left.set_xlabel("Days Since First Survey (12-11-2024)")
+    ax_left.set_title("Temporal NGRDI Growth Trend Across Survey Dates", fontsize=11, fontweight="bold")
+    ax_left.set_xlabel(f"Days Since Initial Flight ({earliest_date})")
     ax_left.set_ylabel("Mean Plot NGRDI")
     ax_left.grid(True, alpha=0.3)
+    handles_l, labels_l = ax_left.get_legend_handles_labels()
+    ax_left.legend(
+        handles=handles_l,
+        labels=[treatment_labels.get(l, l.upper()) for l in labels_l],
+        title="Irrigation Method",
+        framealpha=0.9
+    )
 
     sns.boxplot(
-        data=df_metrics, x="plot_type", y="stress_pixel_ratio", hue="plot_type", palette="Set2", legend=False, ax=ax_right
+        data=df_metrics, x="plot_type", y="stress_pixel_ratio", hue="plot_type",
+        palette=treatment_palette, legend=False, ax=ax_right
     )
     sns.stripplot(
         data=df_metrics, x="plot_type", y="stress_pixel_ratio", color="black", alpha=0.35, jitter=0.2, size=5, ax=ax_right
     )
-    ax_right.set_title("Crop Stress Pixel Proportion (One-Way ANOVA Comparison)")
-    ax_right.set_xlabel("Irrigation System")
+    ax_right.set_title("Crop Stress Pixel Proportion (One-Way ANOVA Comparison)", fontsize=11, fontweight="bold")
+    ax_right.set_xlabel("Irrigation Method")
     ax_right.set_ylabel("Stressed Pixel Ratio")
+    current_labels = [t.get_text() for t in ax_right.get_xticklabels()]
+    ax_right.set_xticks(range(len(current_labels)))
+    ax_right.set_xticklabels([treatment_labels.get(t, t) for t in current_labels])
     ax_right.grid(True, alpha=0.3)
     if df_metrics["stress_pixel_ratio"].max() < 0.001:
         ax_right.set_ylim(-0.005, 0.05)
@@ -378,41 +447,55 @@ def run_streamlit_dashboard():
             fontsize=10, color="#1b5e20", weight="bold"
         )
     fig2.tight_layout()
-    st.pyplot(fig2)
+    st.pyplot(fig2, **_get_stretch_kwarg(st.pyplot))
     plt.close(fig2)
 
     st.divider()
 
     # ExG & VARI Temporal Trend Charts: Time-series vegetation health graphs
-    st.subheader("2b. ExG & VARI Temporal Stability — SSPV vs. Control")
+    st.subheader("2b. 🔬 ExG & VARI Temporal Stability — SSPV vs. Control")
     fig3, (ax_exg, ax_vari) = plt.subplots(1, 2, figsize=(14, 4.5))
 
     sns.lineplot(
         data=df_metrics, x="day_num", y="mean_exg", hue="plot_type",
-        marker="s", linewidth=2.5, ax=ax_exg
+        palette=treatment_palette, marker="s", linewidth=2.5, ax=ax_exg
     )
-    ax_exg.set_title("Temporal ExG Stability (SSPV vs. Control)")
-    ax_exg.set_xlabel("Days Since First Survey (12-11-2024)")
+    ax_exg.set_title("Temporal ExG Stability (SSPV vs. Control)", fontsize=11, fontweight="bold")
+    ax_exg.set_xlabel(f"Days Since Initial Flight ({earliest_date})")
     ax_exg.set_ylabel("Mean Plot ExG")
     ax_exg.grid(True, alpha=0.3)
+    handles_e, labels_e = ax_exg.get_legend_handles_labels()
+    ax_exg.legend(
+        handles=handles_e,
+        labels=[treatment_labels.get(l, l.upper()) for l in labels_e],
+        title="Irrigation Method",
+        framealpha=0.9
+    )
 
     sns.lineplot(
         data=df_metrics, x="day_num", y="mean_vari", hue="plot_type",
-        marker="D", linewidth=2.5, ax=ax_vari
+        palette=treatment_palette, marker="D", linewidth=2.5, ax=ax_vari
     )
-    ax_vari.set_title("Temporal VARI Distribution (SSPV vs. Control)")
-    ax_vari.set_xlabel("Days Since First Survey (12-11-2024)")
+    ax_vari.set_title("Temporal VARI Distribution (SSPV vs. Control)", fontsize=11, fontweight="bold")
+    ax_vari.set_xlabel(f"Days Since Initial Flight ({earliest_date})")
     ax_vari.set_ylabel("Mean Plot VARI")
     ax_vari.grid(True, alpha=0.3)
+    handles_v, labels_v = ax_vari.get_legend_handles_labels()
+    ax_vari.legend(
+        handles=handles_v,
+        labels=[treatment_labels.get(l, l.upper()) for l in labels_v],
+        title="Irrigation Method",
+        framealpha=0.9
+    )
 
     plt.tight_layout()
-    st.pyplot(fig3)
+    st.pyplot(fig3, **_get_stretch_kwarg(st.pyplot))
     plt.close(fig3)
 
     st.divider()
 
     # Hybrid Recommendation Table & CSV Download Button
-    st.subheader("3. Actionable Irrigation Scheduling Recommendations")
+    st.subheader("3. 📋 Actionable Irrigation Scheduling Recommendations")
 
     dl_stretch = _get_stretch_kwarg(st.download_button)
     df_stretch = _get_stretch_kwarg(st.dataframe)
@@ -422,7 +505,7 @@ def run_streamlit_dashboard():
         st.download_button(
             label="📥 Download Metrics Table (CSV)",
             data=df_metrics.to_csv(index=False).encode("utf-8"),
-            file_name="sspv_7date_metrics.csv",
+            file_name="sspv_field_evaluation_metrics.csv",
             mime="text/csv",
             **dl_stretch
         )
@@ -431,7 +514,7 @@ def run_streamlit_dashboard():
         st.download_button(
             label="🎓 Download MTP Evaluation Report (PDF)",
             data=pdf_bytes,
-            file_name="MTP_Thesis_Evaluation_Chapter_Report.pdf",
+            file_name="MTP_Evaluation_Report_M25AI2038.pdf",
             mime="application/pdf",
             **dl_stretch
         )
@@ -440,7 +523,7 @@ def run_streamlit_dashboard():
         st.download_button(
             label="📄 Download Evaluation Summary (.txt)",
             data=thesis_pdf_text.encode("utf-8"),
-            file_name="MTP_Thesis_Evaluation_Chapter_Report.txt",
+            file_name="MTP_Evaluation_Summary_M25AI2038.txt",
             mime="text/plain",
             **dl_stretch
         )
@@ -464,7 +547,7 @@ def run_streamlit_dashboard():
 
     df_display = df_metrics[list(pretty_col_names.keys())].copy().rename(columns=pretty_col_names)
 
-    # Excel-style formatting: pure horizontal & vertical centering across all headers and cells
+    # Excel-style formatting: professional alignment with centered metrics and left-aligned textual recommendations
     styled_df = (
         df_display.style
         .hide(axis="index")
@@ -479,11 +562,43 @@ def run_streamlit_dashboard():
             "text-align": "center",
             "vertical-align": "middle",
             "white-space": "nowrap",
-            "padding": "10px 16px",
+            "padding": "10px 14px",
             "font-size": "13px",
             "border": "1px solid #e2e8f0",
         })
-        .set_table_styles([
+        .set_properties(
+            subset=["Primary Action Recommendation", "Ranked Decision Hierarchy (Top-2 Actions)"],
+            **{
+                "text-align": "left",
+                "padding-left": "16px",
+                "white-space": "normal",
+                "min-width": "260px",
+            }
+        )
+        .set_properties(
+            subset=["Image Name"],
+            **{
+                "text-align": "left",
+                "padding-left": "14px",
+                "padding-right": "14px",
+                "white-space": "nowrap",
+                "min-width": "290px",
+                "font-family": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+                "font-size": "12.5px",
+                "font-weight": "500",
+            }
+        )
+    )
+
+    # Subtle status badge styling for categorical fields
+    map_func = getattr(styled_df, "map", getattr(styled_df, "applymap", None))
+    if map_func:
+        styled_df = map_func(
+            lambda v: "background-color: #f0fdf4; color: #166534; font-weight: 600;" if "SSPV" in str(v).upper() else "background-color: #fff7ed; color: #9a3412; font-weight: 600;",
+            subset=["Plot Type"]
+        )
+
+    styled_df = styled_df.set_table_styles([
             {
                 "selector": "thead th",
                 "props": [
@@ -493,7 +608,7 @@ def run_streamlit_dashboard():
                     ("color", "#0f172a"),
                     ("font-weight", "600"),
                     ("font-size", "13px"),
-                    ("padding", "11px 18px"),
+                    ("padding", "11px 16px"),
                     ("white-space", "nowrap"),
                     ("border", "1px solid #cbd5e1"),
                     ("position", "sticky"),
@@ -514,11 +629,12 @@ def run_streamlit_dashboard():
                 "props": [
                     ("border-collapse", "collapse"),
                     ("width", "100%"),
+                    ("min-width", "100%"),
+                    ("table-layout", "auto"),
                     ("font-family", "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"),
                 ],
             },
         ])
-    )
 
     # Scrollable container replicating Excel spreadsheet viewport with freeze-pane header
     grid_html = (
@@ -546,7 +662,7 @@ def run_streamlit_dashboard():
     r_col1.metric(
         "Capillary Stability Ratio",
         f"{rutag_stats.get('capillary_stability_ratio', 1.0):.2f}x",
-        delta="Gangotri Steady Buffer (Low Volatility)"
+        delta="Steady Capillary Percolation Buffer"
     )
     r_col2.metric(
         "Root-Zone Saline Protection",
@@ -559,36 +675,75 @@ def run_streamlit_dashboard():
         delta="vs. Conventional Flood/Furrow"
     )
 
-    # Inspect current patch RuTAG farmer advisory (Equal-dimension bilingual cards with Voice Playback)
+    st.divider()
+
+    # Section 5: Smallholder Field Advisory (Bilingual Voice & Text)
+    st.subheader("5. 📢 Smallholder Field Advisory (Bilingual Voice & Text)")
+    st.caption(
+        "Field-level actionable recommendations delivered in bilingual format (English agronomist & Hindi farmer advisory) "
+        "with native voice playback to support equitable smallholder decision-making."
+    )
+
     if sample_idx < len(df_metrics):
         cur_row = df_metrics.iloc[sample_idx]
-        st.markdown("#### 📢 Smallholder Field Advisory (Bilingual Voice & Text)")
+        
+        target_date = cur_row.get("date", "N/A")
+        target_img = cur_row.get("source_file", cur_row.get("image_name", "Aerial Frame"))
+        target_plot = str(cur_row.get("plot_type", "SSPV")).upper()
+        if uploaded_file is not None:
+            target_date = "Live Flight"
+            target_img = uploaded_file.name
+            target_plot = "SSPV"
+
+        context_pill = (
+            f'<div style="display: inline-flex; align-items: center; gap: 10px; background-color: #f8fafc; '
+            f'border: 1px solid #e2e8f0; border-radius: 6px; padding: 5px 14px; margin-bottom: 10px; '
+            f'font-size: 12.5px; color: #334155;">'
+            f'<span>🗓️ <b>Target Date:</b> {target_date}</span>'
+            f'<span style="color: #cbd5e1;">|</span>'
+            f'<span>📷 <b>Target Image:</b> <code>{target_img}</code></span>'
+            f'<span style="color: #cbd5e1;">|</span>'
+            f'<span>🌾 <b>Treatment:</b> <b>{target_plot}</b></span>'
+            f'</div>'
+        )
+        if hasattr(st, "html"):
+            st.html(context_pill)
+        else:
+            st.markdown(context_pill, unsafe_allow_html=True)
         
         en_text = cur_row.get('rutag_advisory_en', cur_row['recommendation'])
         hi_text = cur_row.get('rutag_advisory_hi', 'खेत की नियमित देखभाल जारी रखें।')
         water_saved = float(cur_row.get('water_saved_l_day', 0.0))
-        en_clean = str(en_text).replace("'", "\\'").replace('"', '&quot;')
-        hi_clean = str(hi_text).replace("'", "\\'").replace('"', '&quot;')
 
-        card_html = f"""
-        <div style="display: flex; gap: 16px; margin-top: 6px; width: 100%;">
-            <div style="flex: 1; min-height: 145px; background-color: #f0f7ff; border: 1.5px solid #b8daff; border-radius: 8px; padding: 14px 18px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+        cached_tts = st.cache_data(_generate_speech_wav)
+        en_wav = cached_tts(en_text, "en")
+        hi_wav = cached_tts(hi_text, "hi")
+
+        col_ad_en, col_ad_hi = st.columns(2)
+        with col_ad_en:
+            card_en_html = f"""
+            <div style="min-height: 140px; background-color: #f0f7ff; border: 1.5px solid #b8daff; border-radius: 8px; padding: 14px 18px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
                 <div>
                     <div style="font-weight: 700; color: #004085; font-size: 14px; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
                         <span>📢 English Advisory</span>
                         <span style="font-size: 11px; background: #cce5ff; color: #004085; padding: 2px 7px; border-radius: 4px;">Agronomist</span>
                     </div>
-                    <div style="color: #0b2e4f; font-size: 13.5px; line-height: 1.45;">{en_text}</div>
+                    <div style="color: #0b2e4f; font-size: 13.5px; line-height: 1.5;">{en_text}</div>
                 </div>
-                <div style="margin-top: 12px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #d6e9f8; pt: 8px;">
-                    <span style="font-size: 11.5px; color: #004085; font-weight: 600;">💧 Water Saved: ~{water_saved:.1f} L/day</span>
-                    <button onclick="window.speechSynthesis.cancel(); let u = new SpeechSynthesisUtterance('{en_clean}'); u.lang = 'en-IN'; window.speechSynthesis.speak(u);" 
-                            style="background-color: #004085; color: white; border: none; border-radius: 5px; padding: 5px 12px; font-size: 12px; cursor: pointer; font-weight: 600; transition: 0.2s;">
-                        🔊 Listen (English)
-                    </button>
-                </div>
+                <div style="margin-top: 10px; font-size: 11.5px; color: #004085; font-weight: 600;">💧 Water Saved: ~{water_saved:.1f} L/day</div>
             </div>
-            <div style="flex: 1; min-height: 145px; background-color: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 8px; padding: 14px 18px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+            """
+            if hasattr(st, "html"):
+                st.html(card_en_html)
+            else:
+                st.markdown(card_en_html, unsafe_allow_html=True)
+            if en_wav:
+                st.caption("🔊 **Listen (Indian English Voice - Rishi):**")
+                st.audio(en_wav, format="audio/wav")
+
+        with col_ad_hi:
+            card_hi_html = f"""
+            <div style="min-height: 140px; background-color: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 8px; padding: 14px 18px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
                 <div>
                     <div style="font-weight: 700; color: #155724; font-size: 14px; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
                         <span>🌾 ग्रामीण किसान सलाह (हिंदी)</span>
@@ -596,18 +751,14 @@ def run_streamlit_dashboard():
                     </div>
                     <div style="color: #14532d; font-size: 13.8px; line-height: 1.5;">{hi_text}</div>
                 </div>
-                <div style="margin-top: 12px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #d1fae5; pt: 8px;">
-                    <span style="font-size: 11.5px; color: #155724; font-weight: 600;">💧 जल बचत: ~{water_saved:.1f} ली/दिन</span>
-                    <button onclick="window.speechSynthesis.cancel(); let u = new SpeechSynthesisUtterance('{hi_clean}'); u.lang = 'hi-IN'; window.speechSynthesis.speak(u);" 
-                            style="background-color: #155724; color: white; border: none; border-radius: 5px; padding: 5px 12px; font-size: 12px; cursor: pointer; font-weight: 600; transition: 0.2s;">
-                        🔊 सुनें (Audio Playback)
-                    </button>
-                </div>
+                <div style="margin-top: 10px; font-size: 11.5px; color: #155724; font-weight: 600;">💧 जल बचत: ~{water_saved:.1f} ली/दिन</div>
             </div>
-        </div>
-        """
-        if hasattr(st, "html"):
-            st.html(card_html)
-        else:
-            st.markdown(card_html, unsafe_allow_html=True)
+            """
+            if hasattr(st, "html"):
+                st.html(card_hi_html)
+            else:
+                st.markdown(card_hi_html, unsafe_allow_html=True)
+            if hi_wav:
+                st.caption("🔊 **सुनें (हिंदी आवाज - लेखा):**")
+                st.audio(hi_wav, format="audio/wav")
 

@@ -174,12 +174,13 @@ Launch the graphical user interface:
 streamlit run main.py
 ```
 **Dashboard Features:**
-1. **Interactive Sidebar:** Select Agro-Climatic Zone (Jodhpur Aridisol, Nagaur, etc.), Multi-Task CNN backbone (`ResNet18` or `EfficientNet-B0`), set training epochs, adjust DJI frame sampling (default `5` for instant 5s startup), or drag-and-drop a raw DJI drone photo (`.JPG`/`.TIF`).
+1. **Interactive Sidebar:** Select Agro-Climatic Zone (`dehradun_valley` [Default], Jodhpur Aridisol, Nagaur, etc.), Multi-Task CNN backbone (`ResNet18` or `EfficientNet-B0`), set training epochs, adjust image frame sampling (default `5` for instant 5s startup), target specific survey flight dates and image frames, or drag-and-drop a raw aerial drone photo (`.JPG`/`.TIF`). Stretched width ensures all metadata displays without clipping.
 2. **Top KPI Row:** Instant comparison of SSPV vs. Control mean NGRDI, Welch's t-test p-value, Cohen's d effect size, and temporal variance.
-3. **Spatial Diagnostics:** Side-by-side visualization of RGB, NGRDI canopy greenness heatmap, U-Net 4-class segmentation mask, and Grad-CAM spatial attention map.
-4. **Temporal Multi-Date Trends:** Four-panel graphs tracking NGRDI growth, stress pixel proportion boxplot, ExG stability, and VARI consistency across all survey dates.
-5. **RuTAG Human Ecology & Hydrology Audit:** Real-time evaluation of capillary moisture stability (Gangotri percolation buffer), root-zone desalination protection, estimated groundwater conservation (~38.5%), and bilingual (English/Hindi) smallholder field advisories.
-6. **Downloadable Thesis Artifacts:** One-click download buttons for the complete 7-date CSV metrics table, formal thesis chapter PDF report (`.pdf`), and plain text report (`.txt`).
+3. **Section 1 (Spatial Diagnostics):** Side-by-side visualization of RGB, NGRDI canopy greenness heatmap, U-Net 4-class segmentation mask, and Grad-CAM spatial attention map with active image filenames displayed underneath.
+4. **Section 2a & 2b (Temporal Trends):** Four-panel graphs tracking NGRDI growth, stress pixel proportion boxplot, ExG stability, and VARI consistency across all survey dates.
+5. **Section 3 (Actionable Recommendations):** Full per-patch metrics table with real image filenames, confidence scores, and one-click ReportLab PDF, CSV, and text downloads.
+6. **Section 4 (RuTAG Human Ecology Audit):** Real-time evaluation of capillary moisture stability (Gangotri percolation buffer), root-zone desalination protection, and estimated groundwater conservation (~38.5%).
+7. **Section 5 (Smallholder Field Advisory):** Bilingual (English/Hindi) smallholder field advisories with native spoken voice audio playback (`st.audio`).
 
 ---
 

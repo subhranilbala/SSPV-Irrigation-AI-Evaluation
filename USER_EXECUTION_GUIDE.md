@@ -361,10 +361,12 @@ A pre-formatted, publication-ready academic report in plain text:
 
 ### Output 6: Real-Time Streamlit Visual Diagnostics
 When viewing via the dashboard:
-1. **Interactive Top KPI Cards:** Displays SSPV NGRDI, Welch t-test p-value, Cohen's d, and ExG temporal std.
-2. **Synchronized 4-Panel Spatial Inspector:** Shows side-by-side RGB, NGRDI greenness heatmap, 4-class U-Net segmentation mask (including mound salt halos), and Grad-CAM attention overlay.
-3. **Temporal Trend Figures:** Dynamic graphs showing growth divergence between SSPV and Control.
-4. **Actionable Table & CSV Download Buttons:** Instant file download with one click.
+1. **Interactive Top KPI Cards:** Displays SSPV NGRDI, Welch t-test p-value, Cohen's d effect size, and ExG temporal std.
+2. **Synchronized 4-Panel Spatial Inspector (Section 1):** Shows side-by-side RGB, NGRDI greenness heatmap, 4-class U-Net segmentation mask (including mound salt halos), and Grad-CAM attention overlay with image filenames displayed underneath.
+3. **Temporal Trend Figures (Section 2a & 2b):** Dynamic graphs showing growth divergence between SSPV and Control, crop stress pixel ANOVA boxplots, ExG capillary stability, and VARI distributions.
+4. **Actionable Table & Artifact Downloads (Section 3):** Complete per-patch metrics table with full image names, confidence scores, CSV export, and one-click ReportLab PDF chapter report generation.
+5. **RuTAG Human Ecology & Traditional Hydrology Audit (Section 4):** Capillary stability ratios, salt protection telemetry, and estimated groundwater saved (~38.5%).
+6. **Smallholder Field Advisory (Bilingual Voice & Text) (Section 5):** English (Agronomist) and Hindi (Kisaan Mitra) actionable guidance with native voice audio playback.
 
 ---
 

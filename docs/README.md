@@ -18,7 +18,7 @@ This directory provides deep-dive architectural, mathematical, and algorithmic d
 | **08** | [`08_recommendation.md`](file:///Users/subhranilbala/Downloads/SSPV-Irrigation-AI-Evaluation/docs/modules/08_recommendation.md) | `recommendation.py` | Two-tier decision support: determinate agronomic rules + 13-dim Decision Tree for ranked action confidence |
 | **09** | [`09_dataset.md`](file:///Users/subhranilbala/Downloads/SSPV-Irrigation-AI-Evaluation/docs/modules/09_dataset.md) | `dataset.py` | Real DJI Zenmuse P1 multi-date folder loader with uniform striding & physically realistic 7-date simulator |
 | **10** | [`10_orchestrator.md`](file:///Users/subhranilbala/Downloads/SSPV-Irrigation-AI-Evaluation/docs/modules/10_orchestrator.md) | `orchestrator.py` | End-to-end training loop, multi-date inference evaluator, dynamic class weighting, thesis artifact exporter |
-| **11** | [`11_dashboard.md`](file:///Users/subhranilbala/Downloads/SSPV-Irrigation-AI-Evaluation/docs/modules/11_dashboard.md) | `dashboard.py` | Interactive Streamlit web analytics UI with synchronized 4-panel spatial diagnostic viewer and temporal charts |
+| **11** | [`11_dashboard.md`](file:///Users/subhranilbala/Downloads/SSPV-Irrigation-AI-Evaluation/docs/modules/11_dashboard.md) | `dashboard.py` | Interactive Streamlit analytics UI with synchronized 4-panel spatial viewer, temporal trends, RuTAG audit, and bilingual voice advisories |
 
 ---
 
