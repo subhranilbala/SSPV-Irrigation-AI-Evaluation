@@ -1,5 +1,5 @@
 """
-MODULE 5: Grad-CAM Explainability for 11-Channel Multi-Task CNN.
+MODULE 06: Grad-CAM Explainability for 11-Channel Multi-Task CNN.
 
 Implements Selvaraju et al. (2017) Grad-CAM on the final convolutional block
 of the Multi-Task CNN (supports both ResNet18 and EfficientNet-B0).

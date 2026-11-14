@@ -1,5 +1,5 @@
 """
-MODULE 7: Hybrid Logic-and-ML Recommendation Engine.
+MODULE 08: Hybrid Logic-and-ML Recommendation Engine.
 
 Implements Slide 14 Hybrid Recommendation Engine:
 - Tier 1: Rule-Based Logic for Determinate Agronomic Conditions

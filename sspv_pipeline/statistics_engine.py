@@ -1,5 +1,5 @@
 """
-MODULE 6: Statistical Comparison Engine (t-Test, ANOVA, Cohen's d, Regression).
+MODULE 07: Statistical Comparison Engine (t-Test, ANOVA, Cohen's d, Regression).
 
 Implements Slide 14 Statistical Comparison Engine:
 1. Two-sample Welch's t-test (SSPV vs. Conventional Control mean NGRDI difference)
@@ -127,12 +127,12 @@ class StatisticalComparisonEngine:
         ctrl_exg_temporal_std = float(np.std(ctrl.groupby("date")["mean_exg"].mean()))
 
         # 6. RuTAG Capillary Hydrology & Ecological Validation
-        # Capillary Stability (Gangotri percolation principle): SSPV dampens moisture oscillation
+        # Capillary Stability: SSPV dampens moisture oscillation via steady matric suction
         sspv_moist_var = float(sspv["moisture_zone_variance"].mean()) if "moisture_zone_variance" in sspv.columns else 0.05
         ctrl_moist_var = float(ctrl["moisture_zone_variance"].mean()) if "moisture_zone_variance" in ctrl.columns else 0.15
         capillary_stability_ratio = float(ctrl_moist_var / (sspv_moist_var + 1e-6))
 
-        # Salt Leaching (Parashurama / Mannarasala principle): Salt accumulation displaced to perimeter
+        # Salt Leaching: Salt accumulation displaced to perimeter
         sspv_salt_ratio = float(sspv["salt_patch_ratio"].mean()) if "salt_patch_ratio" in sspv.columns else 0.0
         ctrl_salt_ratio = float(ctrl["salt_patch_ratio"].mean()) if "salt_patch_ratio" in ctrl.columns else 0.0
 
@@ -173,7 +173,7 @@ class StatisticalComparisonEngine:
             },
             "rutag_hydrology_validation": {
                 "capillary_stability_ratio": capillary_stability_ratio,
-                "capillary_stability_interpretation": "SSPV maintains steady matric buffer (Gangotri low-oscillation percolation)" if capillary_stability_ratio > 1.2 else "Comparable moisture variation",
+                "capillary_stability_interpretation": "SSPV maintains steady matric buffer (unpressurized capillary percolation)" if capillary_stability_ratio > 1.2 else "Comparable moisture variation",
                 "sspv_perimeter_salt_ratio": sspv_salt_ratio,
                 "control_surface_salt_ratio": ctrl_salt_ratio,
                 "desalination_protection_active": bool(sspv_salt_ratio > ctrl_salt_ratio),

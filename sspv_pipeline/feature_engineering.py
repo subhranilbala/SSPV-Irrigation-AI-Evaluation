@@ -1,5 +1,5 @@
 """
-MODULE 2: 11-Channel Spectral Index & Feature Engineering.
+MODULE 03: 11-Channel Spectral Index & Feature Engineering.
 
 Implements Slide 12 & 13:
 Computes 8 RGB Vegetation Indices pixel-wise and stacks them with R, G, B

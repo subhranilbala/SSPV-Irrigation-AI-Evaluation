@@ -86,7 +86,7 @@ Returns a dictionary structured as:
   "temporal_regression": { "sspv_slope_per_day": ..., "inter_plot_slope_z_stat": ... },
   "rutag_hydrology_validation": {
     "capillary_stability_ratio": ...,
-    "capillary_stability_interpretation": "SSPV maintains steady matric buffer (Gangotri low-oscillation percolation)",
+    "capillary_stability_interpretation": "SSPV maintains steady matric buffer (unpressurized capillary percolation)",
     "sspv_perimeter_salt_ratio": ...,
     "desalination_protection_active": true,
     "estimated_water_conservation_pct": 38.5

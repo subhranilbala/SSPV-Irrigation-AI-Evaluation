@@ -1,5 +1,5 @@
 """
-MODULE 8: Dataset & Sliding-Window Patch Generator for DJI Zenmuse P1.
+MODULE 09: Dataset & Sliding-Window Patch Generator for DJI Zenmuse P1.
 
 Handles multi-date drone folders and synthesizes realistic benchmark data.
 """
@@ -9,20 +9,54 @@ import glob
 import tempfile
 import concurrent.futures
 from datetime import datetime
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Tuple
 
 import numpy as np
 from PIL import Image
 import torch
 from torch.utils.data import Dataset
 
-from .config import HAS_CV2, REGIONAL_PROFILES, DEFAULT_REGION_KEY
-from .preprocessing import UAVPreprocessor
+from .config import HAS_CV2, REGIONAL_PROFILES, DEFAULT_REGION_KEY, GROUND_TRUTH_ROIS, REFERENCE_PLOT_GPS
+from .preprocessing import (
+    UAVPreprocessor, extract_exif_gps, compute_gps_distance,
+    detect_realtime_plot_boundaries
+)
 from .feature_engineering import VegetationIndexExtractor
 from .pseudo_labeling import BiophysicalPseudoLabeler
 
 if HAS_CV2:
     import cv2
+
+
+def is_frame_in_study_plot(
+    img_path: str,
+    max_radius_m: Optional[float] = None,
+    target_gps: Optional[Dict[str, float]] = None
+) -> Tuple[bool, float]:
+    """
+    Checks if a drone frame was captured directly over the experimental study plot
+    using its embedded EXIF GPS tags and real-time dual-presence validation.
+    Returns (is_valid, distance_in_meters).
+    If the image lacks EXIF GPS tags (e.g. synthetic test mocks), returns (True, 0.0)
+    to gracefully allow fallback execution without error.
+    """
+    if target_gps is None:
+        target_gps = REFERENCE_PLOT_GPS
+    if max_radius_m is None:
+        max_radius_m = target_gps.get("max_plot_radius_m", 16.0)
+
+    coord = extract_exif_gps(img_path)
+    if coord is None:
+        return True, 0.0
+
+    lat, lon, _ = coord
+    dist = compute_gps_distance((lat, lon), (target_gps["lat"], target_gps["lon"]))
+    if dist > max_radius_m:
+        return False, dist
+
+    # Real-time dual presence validation (must contain both SSPV & Control)
+    det = detect_realtime_plot_boundaries(np.zeros((682, 1024, 3), dtype=np.uint8), img_path=img_path)
+    return bool(det.get("is_valid_dual_presence", True)), dist
 
 
 class SSPVDronePatchDataset(Dataset):
@@ -64,6 +98,8 @@ class SSPVDronePatchDataset(Dataset):
             "date": item["date"],
             "day_num": item["day_num"],
             "plot_type": item["plot_type"],
+            "source_file": item.get("source_file", f"Aerial_frame_{idx:03d}.JPG"),
+            "image_name": item.get("source_file", f"Aerial_frame_{idx:03d}.JPG"),
             "rgb": rgb,
             "indices": indices
         }
@@ -234,18 +270,35 @@ def load_real_dji_folders_or_fallback(
                 seen_paths.add(norm_p)
                 unique_files.append(p)
 
+        # 2-Tier Automated Rejection Filter:
+        # Tier 1: Check EXIF GPS to only keep frames flown overhead of the experimental study plot
+        plot_verified_files = []
+        for p in unique_files:
+            in_plot, dist = is_frame_in_study_plot(p)
+            if in_plot:
+                plot_verified_files.append((p, dist))
+
+        if plot_verified_files:
+            # Sort by proximity to exact center of experimental plot
+            plot_verified_files.sort(key=lambda x: x[1])
+            usable_files = [x[0] for x in plot_verified_files]
+            filter_summary = f"{len(usable_files)} plot-aligned frames (rejected {len(unique_files) - len(usable_files)} off-plot frames via EXIF GPS)"
+        else:
+            usable_files = unique_files
+            filter_summary = f"{len(unique_files)} frames (no EXIF GPS tags found, fallback mode)"
+
         # Select either ALL images or uniformly strided frames across the flight
-        if max_images_per_date <= 0 or max_images_per_date >= len(unique_files):
-            img_files = unique_files
+        if max_images_per_date <= 0 or max_images_per_date >= len(usable_files):
+            img_files = usable_files
             mode_str = "ALL frames"
         else:
-            indices_sel = np.linspace(0, len(unique_files) - 1, max_images_per_date, dtype=int)
-            img_files = [unique_files[i] for i in indices_sel]
-            mode_str = "uniformly strided flight frames"
+            indices_sel = np.linspace(0, len(usable_files) - 1, max_images_per_date, dtype=int)
+            img_files = [usable_files[i] for i in indices_sel]
+            mode_str = f"top {len(img_files)} overhead frames"
 
         print(
             f"      -> Date folder '{folder_name}/images': loading {len(img_files)} "
-            f"{mode_str} (out of {len(unique_files)} found)"
+            f"{mode_str} [{filter_summary}]"
         )
 
         # Persistent disk cache directory for preprocessed patches
@@ -258,7 +311,7 @@ def load_real_dji_folders_or_fallback(
 
         def _process_one_frame(img_path: str):
             mtime = int(os.path.getmtime(img_path)) if os.path.exists(img_path) else 0
-            cache_file = os.path.join(cache_dir, f"{os.path.basename(img_path)}_{mtime}_{patch_size}.npz")
+            cache_file = os.path.join(cache_dir, f"{os.path.basename(img_path)}_{mtime}_{patch_size}_dynamic_gt.npz")
 
             # Check if preprocessed patches are already in persistent cache
             if os.path.exists(cache_file):
@@ -273,32 +326,61 @@ def load_real_dji_folders_or_fallback(
             clean_rgb = preprocessor.process(raw_img, reference_img=ref_img)
 
             H, W, _ = clean_rgb.shape
-            coords_sspv = [
-                (0, patch_size, W - patch_size, W),
-                (0, patch_size, max(0, W - 2 * patch_size), max(patch_size, W - patch_size)),
-            ]
-            coords_ctrl = [
-                (H - patch_size, H, W - patch_size, W),
-                (max(0, H - 2 * patch_size), max(patch_size, H - patch_size), W - patch_size, W),
-            ]
 
-            curr_sspv = [
-                clean_rgb[y1:y2, x1:x2, :] for y1, y2, x1, x2 in coords_sspv
-                if clean_rgb[y1:y2, x1:x2, :].shape[:2] == (patch_size, patch_size)
-            ]
-            curr_ctrl = [
-                clean_rgb[y1:y2, x1:x2, :] for y1, y2, x1, x2 in coords_ctrl
-                if clean_rgb[y1:y2, x1:x2, :].shape[:2] == (patch_size, patch_size)
-            ]
+            # Real-Time Dynamic Per-Image Boundary Detection:
+            # Identifies exact arbitrary rotated boundaries of SSPV grid and Control flood basins
+            det = detect_realtime_plot_boundaries(clean_rgb, img_path=img_path)
+            if not det.get("is_valid_dual_presence", True):
+                return np.empty((0, patch_size, patch_size, 3), dtype=np.float32), np.empty((0, patch_size, patch_size, 3), dtype=np.float32), os.path.basename(img_path)
+
+            def _crop_poly_region(img_arr: np.ndarray, poly: np.ndarray) -> np.ndarray:
+                pts = poly.reshape((-1, 2))
+                x1 = max(0, int(np.min(pts[:, 0])))
+                x2 = min(W, int(np.max(pts[:, 0])))
+                y1 = max(0, int(np.min(pts[:, 1])))
+                y2 = min(H, int(np.max(pts[:, 1])))
+                if x2 - x1 < 10 or y2 - y1 < 10:
+                    return np.zeros((10, 10, 3), dtype=img_arr.dtype)
+                return img_arr[y1:y2, x1:x2]
+
+            sspv_crop = _crop_poly_region(clean_rgb, det["sspv_zone"])
+            ctrl_crop = _crop_poly_region(clean_rgb, det["control_zone"])
+
+            def _get_patches(crop: np.ndarray) -> List[np.ndarray]:
+                ch, cw = crop.shape[:2]
+                if ch < 10 or cw < 10:
+                    return []
+                # Split crop into left and right halves to capture multiple sub-plots/mounds
+                mid_x = cw // 2
+                sub_left = crop[:, :mid_x]
+                sub_right = crop[:, mid_x:]
+                patches = []
+                for sub in [sub_left, sub_right]:
+                    if HAS_CV2:
+                        p = cv2.resize(sub, (patch_size, patch_size), interpolation=cv2.INTER_AREA)
+                    else:
+                        pil_sub = Image.fromarray((np.clip(sub, 0, 1) * 255).astype(np.uint8))
+                        pil_res = pil_sub.resize((patch_size, patch_size), Image.BILINEAR)
+                        p = np.asarray(pil_res, dtype=np.float32) / 255.0
+                    patches.append(p)
+                return patches
+
+            curr_sspv = _get_patches(sspv_crop)
+            curr_ctrl = _get_patches(ctrl_crop)
+
+            # Strict Dual-Presence Validation: A frame MUST capture BOTH the SSPV treatment area
+            # AND the Control flood irrigation plot. Frames capturing only SSPV or only Control
+            # are clipped/rejected to preserve strict paired micro-climate & radiometric comparability.
+            if len(curr_sspv) == 0 or len(curr_ctrl) == 0:
+                return np.empty((0, patch_size, patch_size, 3), dtype=np.float32), np.empty((0, patch_size, patch_size, 3), dtype=np.float32), os.path.basename(img_path)
 
             # Save to disk cache for near-instant retrieval on subsequent slider movements
             try:
-                if curr_sspv and curr_ctrl:
-                    np.savez_compressed(
-                        cache_file,
-                        sspv=np.array(curr_sspv, dtype=np.float32),
-                        ctrl=np.array(curr_ctrl, dtype=np.float32)
-                    )
+                np.savez_compressed(
+                    cache_file,
+                    sspv=np.array(curr_sspv, dtype=np.float32),
+                    ctrl=np.array(curr_ctrl, dtype=np.float32)
+                )
             except Exception:
                 pass
 
@@ -310,6 +392,9 @@ def load_real_dji_folders_or_fallback(
             batch_results = list(executor.map(_process_one_frame, img_files))
 
         for sspv_patches, ctrl_patches, fname in batch_results:
+            # Enforce paired dual-presence: only accept frames that yielded both treatments
+            if len(sspv_patches) == 0 or len(ctrl_patches) == 0:
+                continue
             for p in sspv_patches:
                 samples.append({
                     "rgb": p,

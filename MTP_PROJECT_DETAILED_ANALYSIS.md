@@ -223,10 +223,10 @@ flowchart TD
 ```
 SSPV-Irrigation-AI-Evaluation/
 ├── main.py                          # Entry point (CLI + Streamlit)
-├── sspv_pipeline/                   # Core package (12 modules)
-│   ├── __init__.py                  # Public API (18 exports)
-│   ├── config.py                    # Constants, device selection
-│   ├── preprocessing.py             # UAVPreprocessor (5-step pipeline)
+├── sspv_pipeline/                   # Core package (11 modular components)
+│   ├── __init__.py                  # Public API (25+ exports)
+│   ├── config.py                    # Constants, device selection, regional profiles
+│   ├── preprocessing.py             # UAVPreprocessor & dynamic boundary photogrammetry
 │   ├── feature_engineering.py       # VegetationIndexExtractor (8 indices)
 │   ├── pseudo_labeling.py           # BiophysicalPseudoLabeler (4-class seg + 3 tasks)
 │   ├── models.py                    # UNetResNet18_11Ch + MultiTaskSSPVNet + MultiTaskLoss
@@ -237,7 +237,7 @@ SSPV-Irrigation-AI-Evaluation/
 │   ├── orchestrator.py              # SSPVPipelineOrchestrator (end-to-end)
 │   └── dashboard.py                 # Streamlit dashboard (run_streamlit_dashboard)
 ├── tests/
-│   └── test_pipeline.py             # 541-line comprehensive test suite (11 test groups)
+│   └── test_pipeline.py             # Comprehensive test suite (16 test cases covering all modules)
 ├── docs/
 │   ├── README.md                    # Documentation index
 │   └── modules/                     # 11 per-module documentation files
@@ -336,15 +336,15 @@ These are significant features the project implements that were **NOT mentioned*
 | 3 | **Crop-Gated Multi-Task Inference** | U-Net segmentation mask gates CNN features: $X_{gated} = X \odot (0.25 + 0.75 \cdot \mathbb{1}(\hat{y} \in \{1,2\}))$ | [`models.py`](file:///Users/subhranilbala/Downloads/SSPV-Irrigation-AI-Evaluation/sspv_pipeline/models.py) | Prevents soil/background pixels from corrupting crop classification |
 | 4 | **Dynamic Inverse-Frequency Class Weighting** | Computes class weights from dataset label distribution, normalizes to sum=3.0 | [`orchestrator.py`](file:///Users/subhranilbala/Downloads/SSPV-Irrigation-AI-Evaluation/sspv_pipeline/orchestrator.py) | Handles imbalanced classes (common in remote sensing) |
 | 5 | **EfficientNet-B0 Backbone** | Full adaptation for 11-channel input with weight initialization | [`models.py`](file:///Users/subhranilbala/Downloads/SSPV-Irrigation-AI-Evaluation/sspv_pipeline/models.py) | PPT mentions it as an option — code actually implements it |
-| 6 | **7-Date Rajasthan Soil Simulator** | Generates 42 synthetic patches across 7 dates with: arid soil (R=0.46, G=0.38, B=0.27), SSPV capillary zones, vegetation growth curves, salt halos (55% prob), temporal shocks | [`dataset.py`](file:///Users/subhranilbala/Downloads/SSPV-Irrigation-AI-Evaluation/sspv_pipeline/dataset.py) | Realistic benchmark for development/testing without field data |
-| 7 | **DJI Zenmuse P1 Real Data Loader** | Auto-discovers date-named folders, handles 8192×5460 frames, deduplicates, filters macOS `._` files, extracts SSPV (upper-right) and Control (lower-right) patches | [`dataset.py`](file:///Users/subhranilbala/Downloads/SSPV-Irrigation-AI-Evaluation/sspv_pipeline/dataset.py) | Ready for real data — just point to the folder |
+| 6 | **7-Date Calibrated Soil Simulator** | Generates 42 synthetic patches across 7 dates calibrated to regional soil presets (default Dehradun valley [0.42, 0.38, 0.32], Jodhpur Aridisol, Nagaur), SSPV capillary zones, vegetation growth curves, salt halos (55% prob), temporal shocks | [`dataset.py`](file:///Users/subhranilbala/Downloads/SSPV-Irrigation-AI-Evaluation/sspv_pipeline/dataset.py) | Realistic benchmark for development/testing without field data |
+| 7 | **DJI Zenmuse P1 Real Data Loader** | Auto-discovers date-named folders, handles 8192×5460 frames, deduplicates, filters macOS `._` files, and extracts plot-aligned patches using dynamic boundary detection | [`dataset.py`](file:///Users/subhranilbala/Downloads/SSPV-Irrigation-AI-Evaluation/sspv_pipeline/dataset.py) | Ready for real data — just point to the folder |
 | 8 | **Slope Comparison Z-Test** | Inter-plot temporal trend comparison: $Z = \frac{slope_{SSPV} - slope_{ctrl}}{\sqrt{SE_{SSPV}^2 + SE_{ctrl}^2}}$ | [`statistics_engine.py`](file:///Users/subhranilbala/Downloads/SSPV-Irrigation-AI-Evaluation/sspv_pipeline/statistics_engine.py) | Goes beyond PPT's basic statistical tests |
 | 9 | **5th Recommendation: Salinity Management** | Additional recommendation category with salt_ratio scoring | [`recommendation.py`](file:///Users/subhranilbala/Downloads/SSPV-Irrigation-AI-Evaluation/sspv_pipeline/recommendation.py) | SSPV-specific — no other system does this |
 | 10 | **Pre-Trained Decision Tree on Agronomist Rules** | 600 synthetic training samples with Dirichlet-sampled probabilities, calibrated to domain knowledge | [`recommendation.py`](file:///Users/subhranilbala/Downloads/SSPV-Irrigation-AI-Evaluation/sspv_pipeline/recommendation.py) | DT works out-of-the-box without real training data |
-| 11 | **Thesis Artifact Generation** | Auto-generates: CSV metrics, JSON report, .pth weights, 4-panel PNG figure, thesis chapter text | [`orchestrator.py`](file:///Users/subhranilbala/Downloads/SSPV-Irrigation-AI-Evaluation/sspv_pipeline/orchestrator.py) | Directly usable in thesis write-up |
+| 11 | **Thesis Artifact Generation** | Auto-generates: CSV metrics, JSON report, .pth weights, 4-panel PNG figure, thesis chapter PDF & text | [`orchestrator.py`](file:///Users/subhranilbala/Downloads/SSPV-Irrigation-AI-Evaluation/sspv_pipeline/orchestrator.py) | Directly usable in thesis write-up |
 | 12 | **sRGB Inverse Gamma Correction** | Proper radiometric conversion instead of simple division | [`preprocessing.py`](file:///Users/subhranilbala/Downloads/SSPV-Irrigation-AI-Evaluation/sspv_pipeline/preprocessing.py) | Scientifically more rigorous than linear normalization |
-| 13 | **Streamlit KPI Dashboard** | 4 top-level metrics cards + 4-panel spatial inspector + temporal plots + download buttons | [`dashboard.py`](file:///Users/subhranilbala/Downloads/SSPV-Irrigation-AI-Evaluation/sspv_pipeline/dashboard.py) | Production-quality UI, not just basic plots |
-| 14 | **541-Line Test Suite** | 11 test groups covering every module, edge cases, mocking, no-GPU paths | [`test_pipeline.py`](file:///Users/subhranilbala/Downloads/SSPV-Irrigation-AI-Evaluation/tests/test_pipeline.py) | Professional software engineering practice |
+| 13 | **Streamlit KPI Dashboard** | 5 top-level metrics cards + 4-panel spatial inspector + temporal plots + download buttons + 6 visual sections | [`dashboard.py`](file:///Users/subhranilbala/Downloads/SSPV-Irrigation-AI-Evaluation/sspv_pipeline/dashboard.py) | Production-quality UI, not just basic plots |
+| 14 | **Comprehensive Test Suite** | 16 test cases covering every module, edge cases, mocking, no-GPU paths | [`test_pipeline.py`](file:///Users/subhranilbala/Downloads/SSPV-Irrigation-AI-Evaluation/tests/test_pipeline.py) | Professional software engineering practice |
 
 ---
 

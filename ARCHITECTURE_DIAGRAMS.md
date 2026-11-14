@@ -194,14 +194,12 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    TENSOR["11-Channel Input Tensor: (B, 11, H, W)"] --> STEM["Shared Backbone Features Stem\nResNet18 or EfficientNet-B0 (Adapted Conv1)"]
-    STEM --> TARGET_CONV["target_conv_layer\n(ResNet18 layer4 / EffNet features[-1])"]
+    TENSOR["11-Channel Input Tensor: (B, 11, H, W)"] --> APPLY_GATE["Input Soft Gating:\nX_gated = X · (0.25 + 0.75 · CropMask)"]
+    CROP_MASK["U-Net Canopy Mask (Classes 1 & 2)"] --> APPLY_GATE
     
-    CROP_MASK["U-Net Canopy Mask (Classes 1 & 2)"] --> GATE["Soft Spatial Gate:\nGate = 0.25 + 0.75 · CropMask"]
-    TARGET_CONV --> APPLY_GATE["X_gated = Target_Conv ⊙ Gate"]
-    GATE --> APPLY_GATE
-    
-    APPLY_GATE --> GAP["AdaptiveAvgPool2d(1, 1) → Flatten (512 or 1280)"]
+    APPLY_GATE --> STEM["Shared Backbone Features Stem\nResNet18 or EfficientNet-B0 (Adapted Conv1)"]
+    STEM --> TARGET_CONV["target_conv_layer\n(ResNet18 layer4 / EffNet features[-1])\n[Grad-CAM Hook Layer]"]
+    TARGET_CONV --> GAP["AdaptiveAvgPool2d(1, 1) → Flatten (512 or 1280)"]
 
     subgraph Heads["Task Classification Heads"]
         GAP --> H_STR["Stress Head\nFC(dim→128) → ReLU → Dropout(0.25) → FC(128→3)"]

@@ -57,7 +57,13 @@ Configures region-specific soil baseline reflectances and climate parameters (wi
 - **`south_india_laterite`:** Southern India red ferruginous laterite.
 - **`indo_gangetic`:** Deep fertile alluvium.
 
-### 2.5 RuTAG Metadata (`RUTAG_METADATA`)
+### 2.5 Ground-Truth Plot Geometries & Drone Specifications
+- **`REFERENCE_PLOT_GPS`:** Master WGS84 geographic coordinates (`lat: 30.3516097, lon: 77.8742098`, altitude: `536.13m`) corresponding to the geographic centroid of the experimental study area in Dehradun.
+- **`GROUND_TRUTH_GEO_POLYS`:** Physical ground polygon coordinates (WGS84 Lat/Lon vertices) for the overall `study_area`, the `sspv_zone` (upper 55% with 25 pitcher mounds), and the `control_zone` (lower 45% with 8 rectangular check basins), enabling real-time photogrammetric projection.
+- **`DJI_ZENMUSE_P1_SPECS`:** Optical payload sensor specifications (35.9mm × 24.0mm full-frame sensor, 35.0mm focal length, 8192×5460 native resolution) used to derive exact Ground Sampling Distance (GSD) per flight altitude.
+- **`GROUND_TRUTH_ROIS`:** Resolution-independent normalized bounding boxes $[0.0, 1.0]$ for static fallback boundary clipping.
+
+### 2.6 RuTAG Metadata (`RUTAG_METADATA`)
 Formally attributes the engineering modernization to **RuTAG (Rural Technology Action Group), IIT Delhi** and records foundational human-ecology principles (capillary steady-state percolation, evaporative cooling in the rhizosphere, root-zone desalination).
 
 ---

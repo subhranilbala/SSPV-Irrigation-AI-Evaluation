@@ -1,5 +1,5 @@
 """
-MODULE 3: Weakly-Supervised Biophysical Pseudo-Label Generator.
+MODULE 04: Weakly-Supervised Biophysical Pseudo-Label Generator.
 
 Addresses the lack of manual pixel-level ground-truth masks and IoT sensor labels
 by generating physically grounded weak labels from spectral signatures.

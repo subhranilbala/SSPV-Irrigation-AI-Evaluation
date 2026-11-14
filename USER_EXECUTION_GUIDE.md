@@ -172,7 +172,7 @@ For real field surveys conducted over the crop growth cycle across experimental 
 - **File Types:** High-resolution RGB JPEGs (`.JPG`, `.jpg`, `.jpeg`) or Georeferenced GeoTIFFs (`.tif`, `.tiff`).
 - **Resolution:** Supports native DJI Zenmuse P1 full-frame sensor output ($8192 \times 5460$ pixels).
 - **Subfolder Search:** The pipeline automatically looks inside `<date>/images/` first, and recurses into subdirectories if needed. It also automatically ignores hidden macOS resource fork files (`._DJI_...`).
-- **Patch Extraction Strategy:** Upper-Right subregions are mapped to SSPV soil mounds; Lower-Right subregions are mapped to conventional control rows.
+- **Patch Extraction Strategy:** Dynamic polygon boundary isolation via `detect_realtime_plot_boundaries()` isolates the SSPV pitcher mound grid and Control rectangular check basins.
 
 ---
 
@@ -186,7 +186,7 @@ In the Streamlit Dashboard sidebar, you can upload any single `.JPG` or `.TIF` f
 ### Input Type C: Automated 7-Date Field Simulator (Fallback)
 If no local folder path is specified, the pipeline activates an internal physical simulator:
 - Synthesizes 42 multi-date agricultural plot patches across 7 dates matching your exact schedule (`12-11-2024` through `15-01-2025`).
-- Models sandy Rajasthan soil background ($\mu = [0.46, 0.38, 0.27]$).
+- Calibrated to regional soil profiles from `REGIONAL_PROFILES` (default `dehradun_valley` with $\mu = [0.42, 0.38, 0.32]$, or `jodhpur_thar` with $[0.58, 0.48, 0.38]$).
 - Models circular SSPV porous clay vessels with wetted capillary rings, expanding vegetation vigor over time, and outer white salt crust halos (Slide 7).
 - Models conventional row crops with higher chlorosis, spatial patchiness, and irrigation dry-down shocks.
 
@@ -218,6 +218,7 @@ outputs/
 ├── unet_11ch_weights.pth
 ├── multitask_cnn_11ch_weights.pth
 ├── thesis_sspv_vs_control_summary.png
+├── MTP_Thesis_Evaluation_Chapter_Report.pdf
 └── MTP_Thesis_Evaluation_Chapter_Report.txt
 ```
 

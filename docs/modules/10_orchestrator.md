@@ -8,7 +8,7 @@
 
 ## 1. Module Overview & Purpose
 
-`orchestrator.py` is the central coordinator of the entire system. The [`SSPVPipelineOrchestrator`](file:///Users/subhranilbala/Downloads/SSPV-Irrigation-AI-Evaluation/sspv_pipeline/orchestrator.py#L29) class wires together the data ingestion layer, the U-Net and Multi-Task CNN deep learning models, the inferential statistical engine, the recommendation system, and the thesis file exporter.
+`orchestrator.py` is the central coordinator of the entire system. The [`SSPVPipelineOrchestrator`](file:///Users/subhranilbala/Downloads/SSPV-Irrigation-AI-Evaluation/sspv_pipeline/orchestrator.py#L100) class wires together the data ingestion layer, the U-Net and Multi-Task CNN deep learning models, the inferential statistical engine, the recommendation system, and the thesis file exporter.
 
 ---
 
@@ -19,7 +19,7 @@ To prevent majority-class domination during training (e.g., more optimal or heal
 $$
 w_c = \frac{1 / N_c}{\sum_{j=1}^3 1 / N_j} \times 3.0
 $$
-Computes separate weight vectors for stress, moisture, and yield heads and passes them to [`MultiTaskLoss`](file:///Users/subhranilbala/Downloads/SSPV-Irrigation-AI-Evaluation/sspv_pipeline/models.py#L243).
+Computes separate weight vectors for stress, moisture, and yield heads and passes them to [`MultiTaskLoss`](file:///Users/subhranilbala/Downloads/SSPV-Irrigation-AI-Evaluation/sspv_pipeline/models.py#L258).
 
 ### 2.2 Dual Model Training Loop (`train_models`)
 In each training epoch:

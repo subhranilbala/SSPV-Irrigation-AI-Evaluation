@@ -1,5 +1,5 @@
 """
-MODULE 9: End-to-End Training & Evaluation Orchestrator.
+MODULE 10: End-to-End Training & Evaluation Orchestrator.
 
 Trains U-Net + Multi-Task CNN, extracts plot metrics, runs statistical tests,
 and exports thesis artifacts (CSV, JSON, model weights, publication figures).
@@ -298,7 +298,7 @@ class SSPVPipelineOrchestrator:
                     records.append({
                         "sample_id": idx,
                         "date": sample["date"],
-                        "image_name": sample.get("source_file", f"DJI_frame_{idx:03d}.JPG"),
+                        "image_name": sample.get("source_file", f"Aerial_frame_{idx:03d}.JPG"),
                         "day_num": sample["day_num"],
                         "plot_type": sample["plot_type"],
                         "mean_ngrdi": mean_ngrdi,
@@ -479,7 +479,7 @@ class SSPVPipelineOrchestrator:
             report_lines.extend([
                 "",
                 "4. RUTAG HUMAN ECOLOGY & INDIGENOUS HYDROLOGY AUDIT",
-                f"   - Capillary Moisture Stability Ratio : {stab_ratio:.2f}x (Gangotri Buffer vs Control Volatility)",
+                f"   - Capillary Moisture Stability Ratio : {stab_ratio:.2f}x (Steady Capillary Buffer vs Control Volatility)",
                 f"   - Hydraulic Interpretation           : {rutag_val.get('capillary_stability_interpretation', 'N/A')}",
                 f"   - Root-Zone Saline Protection Status : {desal_active}",
                 f"   - Mean SSPV Mound Perimeter Salt     : {rutag_val.get('sspv_perimeter_salt_ratio', 0.0)*100:.2f}%",
@@ -622,10 +622,10 @@ class SSPVPipelineOrchestrator:
         story.append(Paragraph("2. RuTAG Human Ecology, Capillary Hydrology & Soil Reclamation Audit", h2_style))
         rutag_rows = [
             [Paragraph("RuTAG Evaluation Pillar", cell_hl), Paragraph("Observed Metric", cell_hc), Paragraph("Hydrological & Agro-Ecological Meaning", cell_hl)],
-            [Paragraph("Capillary Moisture Stability", cell_lb), Paragraph(f"{rutag_val.get('capillary_stability_ratio', 1.0):.2f}x Lower Variance", cell_c), Paragraph("Dampens moisture shocks (Gangotri unpressurized percolation principle)", cell_l)],
-            [Paragraph("Root-Zone Saline Protection", cell_lb), Paragraph("Active (Salts Displaced to Perimeter)", cell_c), Paragraph("Porous vessel expels salinity outward to perimeter furrows (Parashurama soil cleansing)", cell_l)],
+            [Paragraph("Capillary Moisture Stability", cell_lb), Paragraph(f"{rutag_val.get('capillary_stability_ratio', 1.0):.2f}x Lower Variance", cell_c), Paragraph("Dampens moisture shocks (unpressurized capillary percolation principle)", cell_l)],
+            [Paragraph("Root-Zone Saline Protection", cell_lb), Paragraph("Active (Salts Displaced to Perimeter)", cell_c), Paragraph("Porous vessel expels salinity outward to perimeter furrows (subsurface leaching)", cell_l)],
             [Paragraph("Groundwater Conservation", cell_lb), Paragraph(f"~{rutag_val.get('estimated_water_conservation_pct', 38.5):.1f}% Savings", cell_c), Paragraph("Direct volumetric conservation compared to conventional surface flooding", cell_l)],
-            [Paragraph("Canopy Thermal Buffering", cell_lb), Paragraph("Confirmed Positive", cell_c), Paragraph("Rhizosphere evaporative cooling mitigates midday arid Thar heat stress", cell_l)],
+            [Paragraph("Canopy Thermal Buffering", cell_lb), Paragraph("Confirmed Positive", cell_c), Paragraph("Rhizosphere evaporative cooling mitigates midday canopy thermal stress in field plots", cell_l)],
         ]
         rutag_table = Table(rutag_rows, colWidths=[1.8 * inch, 1.8 * inch, 3.9 * inch])
         rutag_table.setStyle(TableStyle([

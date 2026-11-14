@@ -1,5 +1,5 @@
 """
-MODULE 4: Deep Learning Architectures (11-Ch U-Net & Multi-Task CNN).
+MODULE 05: Deep Learning Architectures (11-Ch U-Net & Multi-Task CNN).
 
 Implements Slide 10 & Slide 13:
 - 11-Channel U-Net Segmentation with ResNet18 Encoder & Skip Connections

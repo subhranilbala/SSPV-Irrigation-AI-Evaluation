@@ -125,7 +125,7 @@ SSPV-Irrigation-AI-Evaluation/
 │   └── dashboard.py                    # Interactive Streamlit UI
 │
 ├── tests/                              # Comprehensive Unit & Regression Tests
-│   └── test_pipeline.py                # 12 test suites covering all 11 modules
+│   └── test_pipeline.py                # 16 test cases covering all 11 modules
 │
 ├── archive/                            # Legacy & Archived Code
 │   ├── README.md
@@ -140,7 +140,6 @@ SSPV-Irrigation-AI-Evaluation/
 │   ├── MTP_Thesis_Evaluation_Chapter_Report.pdf # Publication-grade formal thesis chapter PDF
 │   └── MTP_Thesis_Evaluation_Chapter_Report.txt # Ready-to-use chapter text draft
 │
-├── .sspv_cache/                        # Persistent disk cache for instant patch reload (~0.001s)
 └── venv/                               # Python virtual environment
 ```
 

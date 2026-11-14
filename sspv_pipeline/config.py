@@ -1,5 +1,5 @@
 """
-Global Configuration, Constants & Device Selection.
+MODULE 01: Global Configuration, Constants & Device Selection.
 """
 
 import warnings
@@ -41,6 +41,83 @@ SEG_CLASSES = {
 STRESS_CLASSES = ["Healthy", "Mild Stress", "Severe Stress"]
 MOISTURE_CLASSES = ["Dry", "Optimal", "Wet"]
 YIELD_CLASSES = ["Low", "Medium", "High"]
+
+# ==============================================================================
+# GROUND-TRUTH EXPERIMENTAL PLOT GEOMETRY & GPS (DEHRADUN RESEARCH SITE)
+# ==============================================================================
+
+# Master reference location derived from DJI Zenmuse P1 RTK EXIF header
+REFERENCE_PLOT_GPS = {
+    "lat": 30.351714,
+    "lon": 77.874181,
+    "max_plot_radius_m": 16.0,  # Max distance from plot center to be considered an overhead frame
+    "altitude_asl_m": 536.13,
+    "alt_m": 536.13
+}
+
+# Physical Geographic Ground Coordinates (Lat/Lon) of the Experimental Plot in Dehradun
+# Enables real-time photogrammetric projection to any arbitrary drone flight orientation, heading, or altitude
+GROUND_TRUTH_GEO_POLYS = {
+    "study_area": [
+        (30.3517670, 77.8741979),
+        (30.3515577, 77.8743901),
+        (30.3514503, 77.8742209),
+        (30.3516639, 77.8740304),
+    ],
+    "sspv_zone": [
+        (30.3517283, 77.8742321),
+        (30.3515591, 77.8743852),
+        (30.3514546, 77.8742226),
+        (30.3516238, 77.8740695),
+    ],
+    "control_zone": [
+        (30.3517613, 77.8742012),
+        (30.3517283, 77.8742321),
+        (30.3516238, 77.8740695),
+        (30.3516568, 77.8740386),
+    ]
+}
+
+# Drone Optical Payload Specifications (DJI Zenmuse P1 35mm Survey Camera)
+DJI_ZENMUSE_P1_SPECS = {
+    "sensor_w_mm": 35.9,
+    "sensor_h_mm": 24.0,
+    "focal_length_mm": 35.0,
+    "native_width_px": 8192,
+    "native_height_px": 5460
+}
+
+# Resolution-independent normalized bounding boxes [0.0 - 1.0]
+# Applicable across both native 8192x5460 and downscaled 1024x682 frames
+GROUND_TRUTH_ROIS = {
+    "study_area": {
+        "name": "Total Experimental Study Area (SSPV + Control)",
+        "color_rgb": (255, 0, 0),       # Red
+        "color_bgr": (0, 0, 255),       # Red
+        "ymin": 0.005,
+        "ymax": 0.465,
+        "xmin": 0.350,
+        "xmax": 0.985,
+    },
+    "sspv_zone": {
+        "name": "SSPV Treatment Zone (Porous Pitcher Mounds)",
+        "color_rgb": (30, 144, 255),    # Blue / DodgerBlue
+        "color_bgr": (255, 144, 30),    # Blue
+        "ymin": 0.020,
+        "ymax": 0.365,
+        "xmin": 0.355,
+        "xmax": 0.980,
+    },
+    "control_zone": {
+        "name": "Control Plot (Partitioned Flood Irrigation Basins)",
+        "color_rgb": (0, 230, 0),       # Green
+        "color_bgr": (0, 230, 0),       # Green
+        "ymin": 0.375,
+        "ymax": 0.455,
+        "xmin": 0.385,
+        "xmax": 0.970,
+    }
+}
 
 # ==============================================================================
 # REGIONAL AGRO-ECOLOGICAL & RUTAG CONFIGURATION
@@ -114,7 +191,6 @@ REGIONAL_PROFILES = {
 
 # Active default region (calibrated to Dehradun Doon Valley experimental site)
 DEFAULT_REGION_KEY = "dehradun_valley"
-
 
 
 def get_device() -> torch.device:

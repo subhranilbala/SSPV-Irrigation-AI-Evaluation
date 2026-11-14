@@ -33,8 +33,9 @@
 1. Parses date strings matching `%d-%m-%Y` and sorts sequentially to compute elapsed flight days ($t = 1, 11, 21, \dots$).
 2. Prioritizes `<folder>/images/` matching DJI flight outputs.
 3. Automatically filters out macOS AppleDouble resource fork files (`._DJI_...`).
-4. **Uniform Striding:** Drone flights typically take photos with 80% forward/lateral overlap. If `max_images_per_date` is specified (e.g., 20), it takes an evenly spaced linspace of frames across the entire flight path to cover the full field plot without training on redundant duplicates.
-5. Extracts Upper-Right patches (designated SSPV mounds) and Lower-Right patches (designated Control rows).
+4. **Automated Plot-Proximity Filter (`is_frame_in_study_plot`):** Checks embedded EXIF GPS tags against `REFERENCE_PLOT_GPS` to ensure frames were captured directly over the experimental study area.
+5. **Uniform Striding:** Drone flights typically take photos with 80% forward/lateral overlap. If `max_images_per_date` is specified (e.g., 20), it takes an evenly spaced linspace of frames across the entire flight path to cover the full field plot without training on redundant duplicates.
+6. **Dynamic Boundary Patch Extraction:** Executes `detect_realtime_plot_boundaries()` per frame to dynamically isolate the exact rotated polygons of the SSPV treatment zone (pitcher mounds) and Control plot (border strip basins), and crops paired patches for balanced model evaluation.
 
 ---
 
@@ -50,7 +51,7 @@ When local drone imagery is not provided or runs in automated test environments,
    - `25-12-2024` (Day 44)
    - `05-01-2025` (Day 55)
    - `15-01-2025` (Day 65)
-2. **Arid Sandy Soil Profile:** Normal distribution around $\mu = [0.46, 0.38, 0.27]$ reflecting Western Rajasthan soil reflectance.
+2. **Calibrated Regional Soil Profile:** Generates baseline soil reflectance calibrated to the selected agro-ecological zone from `REGIONAL_PROFILES` (default `dehradun_valley` with $\mu = [0.42, 0.38, 0.32]$ mountain/alluvial loam, or `jodhpur_thar` with $[0.58, 0.48, 0.38]$ arid calcareous sand).
 3. **SSPV Spatial Geometry:**
    - Circular vessels with radius $r = 0.07 \cdot \text{patch\_size}$.
    - Moisture-darkened wetted zone ($dist < 0.30 \cdot \text{patch\_size}$).
